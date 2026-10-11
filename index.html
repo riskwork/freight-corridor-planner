@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Freight Corridor Planner: choose exporter and importer cities, define your cargo, and compare sea, air, rail and road on total landed cost, transit time and risk, with an automatic container and load planner.">
+<meta name="description" content="Freight Corridor Planner: choose exporter and importer cities, define your cargo and corridor risks, and compare sea, air, rail and road on total landed cost, transit time and risk.">
 <title>Freight Corridor Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -179,6 +179,17 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
 .seg button{font-family:var(--mono);font-size:12px;padding:5px 10px;border:0;background:var(--panel);color:var(--muted);cursor:pointer}
 .seg button.on{background:var(--ink);color:var(--paper)}
 .warnline{color:var(--bad);font-size:12.5px}
+.pill.closed{color:var(--paper);background:var(--ink)}
+#rtab{min-width:900px}#rtab td,#rtab th{padding:7px 6px;vertical-align:middle}
+#rtab input{width:78px;text-align:right;padding:5px 6px;font-size:13px}
+#rtab th{white-space:normal;vertical-align:bottom;line-height:1.3}#rtab td:first-child{min-width:190px}#rtab td.note{width:280px;font-size:12px;line-height:1.4}#rtab td.note .clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#rtab select.st{width:auto;font-family:var(--mono);font-size:12px;padding:5px 6px;font-weight:500}
+select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:var(--warn);background:var(--warn-bg)} select.st-red{color:var(--bad);background:var(--bad-bg)} select.st-closed{color:var(--paper);background:var(--ink)}
+.edited{display:inline-block;margin-top:3px;font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.03em}
+.rbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 12px}
+.reffect{border-left:3px solid var(--accent);background:var(--soft);padding:8px 12px;border-radius:0 6px 6px 0;font-size:13px;margin-top:12px}
+.reffect p{margin:0}
+#rlinkbox{margin-top:8px;font-family:var(--mono);font-size:12px}
 @media (max-width:560px){.od{grid-template-columns:1fr}.swap{justify-self:center;transform:rotate(90deg)}.swap:hover{transform:rotate(270deg)}.mini{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -266,9 +277,18 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
       <svg id="scatter" role="img" aria-label="Scatter chart of total cost against door-to-door days"></svg>
     </div>
     <div class="panel">
-      <div class="sec-h"><h2>Chokepoint watch</h2><span class="note">Status as of 11 Oct 2026</span></div>
+      <div class="sec-h"><h2>Chokepoint watch</h2><span class="note" id="chokeSub"><a href="#risk" style="color:var(--accent)">Change risk settings ↓</a></span></div>
       <ul class="risklist" id="chokes"></ul>
     </div>
+  </section>
+
+  <section class="panel" id="risk">
+    <div class="sec-h"><h2>Corridor risk settings</h2><span id="rbadge"></span></div>
+    <p class="note" style="margin:0 0 6px">Risk on each corridor changes with conflicts and circumstances, so you set it. Choose a status for each chokepoint and adjust its numbers; every cost, risk score and recommendation on this page updates at once. Freight rates and transit times stay model-based.</p>
+    <div class="rbar"><span class="eyebrow">Start from</span><div class="seg" id="rpre"></div><button class="btn" id="rreset" type="button">Reset to baseline</button><button class="btn" id="rlink" type="button">Copy scenario link</button></div>
+    <div class="tbl"><table id="rtab"><thead><tr><th class="l">Corridor</th><th class="l">Status</th><th>Chance of disruption %</th><th>Delay if disrupted, days</th><th>War surcharge $/40ft</th><th>Insurance add-on %</th><th>Diversion cost $/40ft</th><th class="l">Notes</th></tr></thead><tbody></tbody></table></div>
+    <input id="rlinkbox" type="text" readonly hidden aria-label="Scenario link">
+    <div class="reffect" id="reffect"></div>
   </section>
 
   <section class="panel">
@@ -289,7 +309,7 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
     <div class="sec-h"><h2 style="font-size:18px">Method and sources</h2></div>
     <p><b>Sea freight</b> is modelled per container as (base + rate × nautical miles) × a trade-lane factor, calibrated so Shanghai–Rotterdam, Shanghai–Genoa, Shanghai–Los Angeles and Shanghai–New York match the <a href="https://sourcing.center/news/2026-10-03-drewry-wci-4434-tp-firm-asia-europe-soft-oct1" target="_blank" rel="noopener">Drewry World Container Index of 1 Oct 2026</a> ($3,399, $3,702, $7,835 and $10,428 per 40ft). Other lanes are model estimates. Sea distance follows the drawn lane network; days use 15 knots plus port time, feeder transshipment and customs.</p>
     <p><b>Road</b> distances between cities and ports come from Google Maps (Shanghai city–Yangshan and Busan are estimates). Truck costs use regional per-km estimates plus border fees. <b>Rail</b> uses the ERAI China–Europe average of about $10,100 per 40ft (<a href="https://index1520.com/en/analytics/monitoring-logisticheskogo-rynka-evrazii-iyul-2026-vypusk-35/" target="_blank" rel="noopener">July 2026</a>); Middle Corridor rates are estimates. <b>Air</b> uses a distance-based rate inside the 2026 Asia–Europe range of $3.20–6.50 per kg (<a href="https://theflyingengineer.com/air-cargo-shipping-cost-per-kg-2026-guide/" target="_blank" rel="noopener">source</a>).</p>
-    <p><b>Risk</b>: chokepoint status from <a href="https://www.falcon-us.com/news/2026/9/16/selected-container-services-returning-to-the-suez-canal" target="_blank" rel="noopener">carrier updates on the Red Sea and Suez</a> and <a href="https://insurancebusinessmag.com/asia/news/marine/hormuz-warrisk-rates-face-fresh-pressure-as-iranus-clashes-resume-588290.aspx" target="_blank" rel="noopener">Hormuz war-risk premiums</a>. War-risk surcharges, delay probabilities and insurance add-ons are model assumptions. Routes through Russia or Belarus are flagged for sanctions and excluded from the recommendation. This tool gives planning estimates, not quotes; customs duties and taxes are not included.</p>
+    <p><b>Risk</b>: chokepoint status from <a href="https://www.falcon-us.com/news/2026/9/16/selected-container-services-returning-to-the-suez-canal" target="_blank" rel="noopener">carrier updates on the Red Sea and Suez</a> and <a href="https://insurancebusinessmag.com/asia/news/marine/hormuz-warrisk-rates-face-fresh-pressure-as-iranus-clashes-resume-588290.aspx" target="_blank" rel="noopener">Hormuz war-risk premiums</a>. War-risk surcharges, delay probabilities and insurance add-ons are model assumptions. Routes through Russia or Belarus are flagged for sanctions and excluded from the recommendation. The baseline risk settings reflect 11 Oct 2026; users can change every corridor's status and risk inputs, including closing a chokepoint, in Corridor risk settings. This tool gives planning estimates, not quotes; customs duties and taxes are not included.</p>
     <p><b>Containers</b>: typical ISO internal dimensions and maximum payloads (20ft 5.90 × 2.35 × 2.39 m, 28,200 kg; 40ft 12.03 × 2.35 × 2.39 m, 26,700 kg; 40ft high cube 2.70 m high, 26,500 kg). Carriers' boxes vary by a few centimetres and kilograms. Loading is calculated lane by lane, testing lengthwise and crosswise placement; it does not model weight distribution or securing. LCL pricing (per revenue ton, about 2.5 times the full-container rate per m³ plus freight-station fees) is a model assumption.</p>
   </section>
 </div>
@@ -447,13 +467,17 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
 
     // ---------- SEA ----------
     const seen = new Set();
+    // chokepoints the user has set to "closed" are removed from the sea network
+    const closed = Object.keys(CH).filter(k => CH[k].status === 'closed');
+    const ban = (...extra) => new Set(closed.concat(extra));
+    const W8 = { red: 30, amber: 12, green: 2 };
     for (const pt of toPorts) {
       const op = M.port[pFrom.code], dp = M.port[pt.code];
       if (op.code === dp.code) continue;
       const variants = [];
-      const v1 = M.sea(op.code, dp.code, new Set()); if (v1) variants.push(v1);
-      if (v1 && (v1.tags.includes('bab') || v1.tags.includes('suez'))) { let v2 = M.sea(op.code, dp.code, new Set(['bab', 'redsea', 'suez'])); if (v2 && v2.tags.includes('panama') && !v1.tags.includes('panama')) v2 = M.sea(op.code, dp.code, new Set(['bab', 'redsea', 'suez', 'panama'])) || v2; if (v2) variants.push(v2); }
-      if (v1 && v1.tags.includes('panama')) { const v3 = M.sea(op.code, dp.code, new Set(['panama'])); if (v3) variants.push(v3); }
+      const v1 = M.sea(op.code, dp.code, ban()); if (v1) variants.push(v1);
+      if (v1 && (v1.tags.includes('bab') || v1.tags.includes('suez'))) { let v2 = M.sea(op.code, dp.code, ban('bab', 'redsea', 'suez')); if (v2 && v2.tags.includes('panama') && !v1.tags.includes('panama')) v2 = M.sea(op.code, dp.code, ban('bab', 'redsea', 'suez', 'panama')) || v2; if (v2) variants.push(v2); }
+      if (v1 && v1.tags.includes('panama')) { const v3 = M.sea(op.code, dp.code, ban('panama')); if (v3) variants.push(v3); }
       for (const v of variants) {
         const key = v.path.join('>'); if (seen.has(key)) continue; seen.add(key);
         const via = v.tags.includes('suez') ? 'via Suez' : v.tags.includes('cape') ? 'via Cape of Good Hope' : v.tags.includes('panama') ? 'via Panama' : v.tags.includes('bab') ? 'via Bab el-Mandeb' : 'direct';
@@ -470,7 +494,7 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
         let war = 0;
         v.tags.forEach(t => { const c = CH[t]; if (!c) return; o.chokes.push(t); war += c.war_usd; o.insAdd += c.ins_pct;
           if (c.p) o.riskEvents.push({ p: c.p, delay: c.delay, usd: c.reroute_usd * sur });
-          o.risk.push({ label: c.name, level: c.status, w: c.status === 'red' ? 30 : c.status === 'amber' ? 12 : 2, detail: c.note, src: c.src }); });
+          o.risk.push({ label: c.name, level: c.status, w: W8[c.status] ?? 2, detail: c.note, src: c.src }); });
         if (war) o.legs.push({ kind: 'fee', cat: 'surcharges', label: 'War-risk surcharge', usd: war * A.warMult * sur, days: 0, detail: 'Charged by carriers for high-risk chokepoints (model estimate)' });
         let feeders = 0;
         [op, dp].forEach(p => { if (p.feeder) { feeders++; o.legs.push({ kind: 'fee', cat: 'surcharges', label: `Transshipment to feeder ship (${p.name})`, usd: A.feederUSD * sur, days: A.feederDays, detail: 'Mainline ships call at a hub; a smaller feeder vessel completes the trip' }); } });
@@ -488,7 +512,9 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
 
     // ---------- AIR ----------
     const gc = hav([from.lon, from.lat], [to.lon, to.lat]);
-    if (gc > 300) {
+    const AS = D.airspace || { name: 'Middle East airspace', status: 'amber', p: 0.1, delay: 2, ins_pct: 0 };
+    const meAir = from.group === 'Middle East' || to.group === 'Middle East';
+    if (gc > 300 && !(meAir && AS.status === 'closed')) {
       const volKg = inp.cbm * A.volKgPerCbm, charge = Math.max(inp.kg, volKg);
       const rate = (A.airBase + A.airPerKm * gc) * airLane(from.group, to.group) * A.airMult;
       const o = { id: 'air', mode: 'air', label: 'Air freight', sub: `${from.name} airport → ${to.name} airport`, legs: [], risk: [], riskEvents: [], insAdd: 0, chokes: [] };
@@ -500,7 +526,8 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
       o.legs.push({ kind: 'port', cat: 'port', label: 'Import handling and customs', usd: charge * A.airHandling + A.airCustomsUSD, days: destCustoms, detail: 'Airport handling and customs clearance' });
       o.legs.push({ kind: 'road', cat: 'inland', label: `Truck from ${to.name} airport`, km: 30, days: 0.5, usd: 120, detail: 'Delivery to the consignee (estimate)' });
       o.chargeKg = charge; o.airRate = rate;
-      if (from.group === 'Middle East' || to.group === 'Middle East') { o.risk.push({ label: 'Airspace restrictions', level: 'amber', w: 10, detail: 'Conflict-related airspace closures in the region can force reroutes and capacity cuts.' }); o.riskEvents.push({ p: 0.1, delay: 2 }); }
+      if (meAir) { o.risk.push({ label: AS.name, level: AS.status, w: ({ red: 25, amber: 10, green: 2 })[AS.status] ?? 10, detail: AS.note || 'Conflict-related airspace closures in the region can force reroutes and capacity cuts.' });
+        if (AS.p) o.riskEvents.push({ p: AS.p, delay: AS.delay || 0 }); o.insAdd += AS.ins_pct || 0; }
       o.risk.push({ label: 'Capacity and price swings', level: 'green', w: 4, detail: 'Air rates move quickly with fuel prices and demand.' });
       if (charge > 25000) o.risk.push({ label: 'Large shipment for air', level: 'amber', w: 8, detail: 'More than 25 tonnes usually needs a dedicated freighter.' });
       finish(o);
@@ -614,7 +641,7 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
     roadCustoms: ['Customs at destination', 'For cross-border trucking: import clearance and inspection at the border or inland depot. Domestic moves pay nothing.'],
     insurance: ['Cargo insurance', 'Rule: cargo value × (0.25% base + war-risk add-on). Add-ons: Bab el-Mandeb +0.20%, Hormuz +0.40%. Covers loss or damage in transit.'],
     choke: ['Chokepoint', 'A narrow sea passage that many ships must use, such as Suez, Hormuz or Malacca. If it is closed or dangerous, ships wait, pay more or take a long detour.'],
-    chokeModel: ['How chokepoints are scored', 'Each chokepoint has a status (red, amber, green) from recent news, a probability of disruption, the delay it would cause and any surcharge. These feed the risk score and the cost of risk.'],
+    chokeModel: ['How chokepoints are scored', 'Each chokepoint has a status (open, watch, high risk or closed), a chance of disruption, the delay it would cause, a war-risk surcharge, an insurance add-on and a diversion cost. You can set all of them in Corridor risk settings. They feed the risk score, cash cost and cost of risk.'],
     border: ['Road border crossing', 'Every customs border adds paperwork, waiting and inspection. Model: $250 and 1 day each, plus a 15% chance of a 2-day delay. The EU counts as one customs area.'],
     sanctions: ['Sanctions flag', 'Routes through Russia or Belarus carry high exposure under EU, US and UK sanctions. They are shown for comparison but never recommended.'],
     stack: ['Cost breakdown bar', 'Shows how the total landed cost splits into freight, surcharges, port and customs, trucking, insurance, cost of time and cost of risk.'],
@@ -633,6 +660,13 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
     floorplan: ['How the loading is calculated', 'Items are placed in lanes along the container. The planner tests turning items lengthwise and crosswise and keeps the layout that fits the most. Each container is filled until either the floor or the weight limit runs out. Numbers in the floor plan show how many layers are stacked. Planning estimate: it does not model weight distribution or securing.'],
     pallet: ['Loading units', 'Goods are counted in loading units: pallets (standard 1.2 × 1.0 m, usually loaded 1.0 to 1.2 m high), crates, IBC tanks, bundles or cartons. Enter the size and weight of one unit as packed.'],
     auto: ['Automatic container choice', 'For each container option the planner loads your goods, prices every route with that equipment (freight, handling, trucking, insurance, cost of time and cost of risk) and picks the option with the lowest total landed cost on the cheapest container route.'],
+    riskSettings: ['Corridor risk settings', 'You decide how risky each chokepoint and the Middle East airspace are, because this changes with conflicts. The baseline is the status on 11 Oct 2026 from carrier and insurance news. Your settings are saved in your browser and can be shared as a link.'],
+    statusRules: ['Status rules', 'Open, Watch and High risk add 2, 12 and 30 points to a sea route\'s risk score (airspace: 2, 10 and 25). Closed removes the passage: ships take another route (for example around the Cape) or the sea option disappears; closed airspace removes air freight to and from the Middle East. Picking a status fills typical numbers, which you can edit.'],
+    pDisrupt: ['Chance of disruption', 'Probability that a shipment on this corridor is delayed or diverted. Used in the cost of risk: chance × (delay days × daily cost of money + diversion cost).'],
+    delayDays: ['Delay if disrupted', 'Extra days a shipment loses when a disruption happens: waiting, convoy schedules or a diversion.'],
+    warUSD: ['War-risk surcharge', 'Cash fee shipping lines add per 40ft container when passing a high-risk area (20ft pays 60%). Added to every route through the chokepoint.'],
+    insAdd: ['Insurance add-on', 'Extra cargo insurance premium, as % of cargo value, that underwriters charge for war risk on this corridor.'],
+    divert: ['Diversion cost', 'Extra cost per 40ft if a ship has to divert or wait because of a disruption. Weighted by the chance of disruption in the cost of risk.'],
     planner: ['Container and load planner', 'Describe each material, its packing size, weight, stacking and value. The planner works out how many containers of each type you need, which limit (space or weight) is reached first, and which choice gives the lowest total cost for the selected route.'],
     incoterms: ['Who pays which leg (Incoterms)', 'Contracts use Incoterms to split costs. FOB: the seller pays to load at the export port; the buyer pays the ship onwards. CIF: the seller also pays freight and insurance to the import port. DDP: the seller pays everything to the buyer\'s door.']
   };
@@ -667,6 +701,8 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
   document.querySelector('label[for="toPort"]').append(' ', info('importPort'));
   document.querySelector('#planner h2').append(' ', info('planner'));
   { const lt = document.querySelectorAll('#lines thead th'); [[0, 'pallet'], [6, 'payload'], [7, 'stacking'], [8, 'value']].forEach(([i, k]) => lt[i].append(' ', info(k))); }
+  document.querySelector('#risk h2').append(' ', info('riskSettings'));
+  { const rt = document.querySelectorAll('#rtab thead th'); [[1, 'statusRules'], [2, 'pDisrupt'], [3, 'delayDays'], [4, 'warUSD'], [5, 'insAdd'], [6, 'divert']].forEach(([i, k]) => rt[i].append(' ', info(k))); }
   $('eqH').append(' ', info('auto')); $('vizH').append(' ', info('floorplan'));
   const ths = document.querySelectorAll('#opts thead th');
   ['route', null, 'cash', 'time', 'risk', 'total', 'perkg', 'level'].forEach((k, i) => { if (!k) return; const old = ths[i].querySelector('.info'); if (old) old.dataset.k = k; else ths[i].append(' ', info(k)); });
@@ -682,7 +718,7 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
   (function glossary() {
     const groups = [['Shipment basics', ['feu', 'locode', 'incoterms', 'gc', 'nm', 'volume']], ['Containers and loading', ['cont20', 'cont40', 'contHC', 'lcl', 'mix', 'pallet', 'density', 'cube', 'payload', 'stacking', 'floorplan', 'auto']],
       ['Costs and how they are calculated', ['cash', 'road', 'exportPort_leg', 'sea', 'lane', 'feeder', 'war', 'importPort_leg', 'air', 'rail', 'insurance', 'time', 'risk', 'total']],
-      ['Risk and recommendation rules', ['choke', 'chokeModel', 'border', 'sanctions', 'score', 'level', 'best', 'fastest', 'safest', 'breakeven']]];
+      ['Risk and recommendation rules', ['choke', 'chokeModel', 'riskSettings', 'statusRules', 'pDisrupt', 'delayDays', 'warUSD', 'insAdd', 'divert', 'border', 'sanctions', 'score', 'level', 'best', 'fastest', 'safest', 'breakeven']]];
     $('glossBody').replaceChildren(...groups.map(([h, ks]) => { const d = document.createElement('div'); const h3 = document.createElement('h3'); h3.textContent = h; const dl = document.createElement('dl');
       ks.forEach(k => { const dt = document.createElement('dt'); dt.textContent = G[k][0]; const dd = document.createElement('dd'); dd.textContent = G[k][1]; dl.append(dt, dd); }); d.append(h3, dl); return d; }));
   })();
@@ -901,6 +937,7 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
       if (o === ch) hd.append(el('span', 'badge', 'Cheapest')); b.append(hd);
       if (!o.ok) { b.append(el('span', 'note', o.why || 'Not available')); b.disabled = true; g.append(b); return; }
       b.append(el('span', 'note', o.count));
+      if (!isFinite(o.total)) { b.append(el('span', 'note', 'No sea, rail or road route with the current risk settings.')); b.disabled = true; b.classList.add('off'); g.append(b); return; }
       b.append(el('span', 'c num', usd(o.total)));
       b.append(el('span', 'note num', `${usd(o.total / Math.max(1, T.units))} per ${T.unitWord}` + (o !== ch && ch ? ` · +${usd(o.total - ch.total)}` : '')));
       const mrow = (lab, v, bind) => { const r = el('div', 'meter' + (bind ? ' bind' : '')); const bar = el('span', 'bar'); const i = el('i'); i.style.width = Math.min(100, v * 100) + '%'; bar.append(i); r.append(el('span', null, lab), bar, el('span', 'num', pct(v))); return r; };
@@ -941,6 +978,75 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
     c.append(lbl, el('b', null, desc), el('span', 'num', `${n0(T.kg)} kg · ${n0(T.cbm, 1)} m³ · ${usd(T.value)}`));
     if (plan && plan.chosen) c.append(el('span', null, `→ ${plan.chosen.count}${plan.chosen.lcl ? '' : ' (' + plan.chosen.title + ')'} · ${state.equipMode === 'auto' ? 'chosen automatically' : 'your choice'}`));
     const a = el('a', null, 'Edit cargo ↓'); a.href = '#planner'; c.append(a);
+  }
+
+  // ---------- corridor risk settings (user-defined) ----------
+  if (!D.airspace) D.airspace = { name: 'Middle East airspace', status: 'amber', p: 0.1, delay: 2, war_usd: 0, ins_pct: 0, reroute_usd: 0, air: true,
+    note: 'Conflict-related airspace closures in the region can force reroutes, capacity cuts and delays for air cargo to and from the Middle East.' };
+  const RK = ['bab', 'redsea', 'suez', 'hormuz', 'malacca', 'panama', 'gibraltar', 'cape', 'airspace'];
+  const rget = k => k === 'airspace' ? D.airspace : D.choke[k];
+  const FIELDS = ['status', 'p', 'delay', 'war_usd', 'ins_pct', 'reroute_usd'];
+  const BASE = {}; RK.forEach(k => { const c = rget(k); BASE[k] = {}; FIELDS.forEach(f => BASE[k][f] = c[f] ?? 0); });
+  const SDEF = { green: { p: 0.02, delay: 1, war_usd: 0, ins_pct: 0, reroute_usd: 0 }, amber: { p: 0.1, delay: 4, war_usd: 150, ins_pct: 0.05, reroute_usd: 300 },
+    red: { p: 0.3, delay: 12, war_usd: 800, ins_pct: 0.3, reroute_usd: 900 }, closed: { p: 0, delay: 0, war_usd: 0, ins_pct: 0, reroute_usd: 0 } };
+  const SDEF_AIR = { green: { p: 0.02, delay: 1, ins_pct: 0 }, amber: { p: 0.1, delay: 2, ins_pct: 0 }, red: { p: 0.3, delay: 4, ins_pct: 0.1 }, closed: { p: 0, delay: 0, ins_pct: 0 } };
+  const SLAB = { green: 'Open', amber: 'Watch', red: 'High risk', closed: 'Closed' };
+  const PRESETS = [
+    ['baseline', 'Baseline 11 Oct 2026', null],
+    ['calm', 'Calm market', { bab: 'green', redsea: 'green', suez: 'green', hormuz: 'green', airspace: 'green' }],
+    ['redsea', 'Red Sea escalation', { bab: 'closed', redsea: 'red', suez: 'red', airspace: 'amber' }],
+    ['gulf', 'Gulf escalation', { hormuz: 'closed', airspace: 'red' }]
+  ];
+  function applyStatus(k, st) { const c = rget(k); c.status = st;
+    if (st === BASE[k].status) FIELDS.forEach(f => c[f] = BASE[k][f]); else Object.assign(c, (k === 'airspace' ? SDEF_AIR : SDEF)[st]); }
+  function overrides() { const o = {}; RK.forEach(k => { const c = rget(k), d = {}; FIELDS.forEach(f => { if ((c[f] ?? 0) !== BASE[k][f]) d[f] = c[f]; }); if (Object.keys(d).length) o[k] = d; }); return o; }
+  function loadOverrides(o) { RK.forEach(k => { const c = rget(k); FIELDS.forEach(f => c[f] = BASE[k][f]); if (o && o[k]) FIELDS.forEach(f => { if (f in o[k]) c[f] = f === 'status' ? (SLAB[o[k][f]] ? o[k][f] : c[f]) : (+o[k][f] || 0); }); }); }
+  (function initRisk() { let o = state.risk || null;
+    try { const m = location.hash.match(/risk=([^&]+)/); if (m) o = JSON.parse(decodeURIComponent(escape(atob(decodeURIComponent(m[1]))))); } catch (e) {}
+    loadOverrides(o); })();
+  function riskTable() {
+    const tb = $('rtab').querySelector('tbody'); tb.replaceChildren();
+    RK.forEach(k => { const c = rget(k), tr = el('tr'); const air = k === 'airspace';
+      const td0 = el('td', 'l'); const nm = el('b', null, c.name + ' '); td0.append(nm, el('span', 'sub', air ? 'Air corridor, Middle East' : k === 'redsea' ? 'Between Bab el-Mandeb and Suez' : 'Sea chokepoint'));
+      const changed = FIELDS.some(f => (c[f] ?? 0) !== BASE[k][f]); if (changed) td0.append(el('span', 'edited', 'Edited · baseline ' + SLAB[BASE[k].status].toLowerCase()));
+      tr.append(td0);
+      const tdS = el('td', 'l'); const sel = document.createElement('select'); sel.className = 'st st-' + c.status; sel.setAttribute('aria-label', c.name + ' status');
+      ['green', 'amber', 'red', 'closed'].forEach(s => sel.append(new Option(SLAB[s], s))); sel.value = c.status;
+      sel.addEventListener('change', () => { applyStatus(k, sel.value); riskTable(); run(); }); tdS.append(sel); tr.append(tdS);
+      const num = (f, scale, step, dis) => { const td = el('td'); if (dis) { td.append(el('span', 'note', '—')); return td; }
+        const i = document.createElement('input'); i.type = 'number'; i.min = 0; i.step = step; i.value = +((c[f] || 0) * scale).toFixed(2); i.disabled = c.status === 'closed'; i.setAttribute('aria-label', c.name + ' ' + f);
+        i.addEventListener('input', () => { const v = parseFloat(i.value); if (!isNaN(v) && v >= 0) { c[f] = f === 'p' ? Math.min(1, v / scale) : v / scale; run(); } });
+        i.addEventListener('change', () => riskTable()); td.append(i); return td; };
+      tr.append(num('p', 100, 1), num('delay', 1, 1), num('war_usd', 1, 50, air), num('ins_pct', 1, 0.05), num('reroute_usd', 1, 50, air));
+      const tdN = el('td', 'l note'); const ntxt = c.status === 'closed' ? (air ? 'Closed: no air option to or from the Middle East.' : 'Closed: ships cannot pass; routes divert or disappear.') : (c.note || ''); const cl = el('span', 'clamp', ntxt); cl.title = ntxt; tdN.append(cl);
+      if (c.src && c.status !== 'closed') { const a = el('a', null, 'Source'); a.href = c.src; a.target = '_blank'; a.rel = 'noopener'; a.style.color = 'var(--route2)'; tdN.append(a); }
+      tr.append(tdN); tb.append(tr); });
+    riskBadge();
+  }
+  function riskBadge() { const n = Object.keys(overrides()).length;
+    $('rbadge').replaceChildren(n ? pill('amber', `Your scenario · ${n} change${n > 1 ? 's' : ''}`) : pill('green', 'Baseline 11 Oct 2026'));
+    const ap = activePreset(); document.querySelectorAll('#rpre button').forEach(b => b.classList.toggle('on', b.dataset.p === ap)); }
+  function activePreset() { const o = overrides(); if (!Object.keys(o).length) return 'baseline';
+    for (const [id, , map] of PRESETS) { if (!map) continue; const ok = RK.every(k => { const want = map[k] || BASE[k].status; const c = rget(k); if (c.status !== want) return false;
+      const ref = want === BASE[k].status ? BASE[k] : (k === 'airspace' ? SDEF_AIR : SDEF)[want]; return Object.keys(ref).every(f => f === 'status' || (c[f] ?? 0) === ref[f]); }); if (ok) return id; }
+    return 'custom'; }
+  $('rpre').replaceChildren(...PRESETS.map(([id, lab, map]) => { const b = el('button', null, lab); b.type = 'button'; b.dataset.p = id;
+    b.addEventListener('click', () => { loadOverrides(null); if (map) Object.entries(map).forEach(([k, st]) => applyStatus(k, st)); riskTable(); run(); }); return b; }));
+  $('rreset').addEventListener('click', () => { loadOverrides(null); riskTable(); run(); });
+  $('rlink').addEventListener('click', () => { const o = overrides(); const url = location.href.split('#')[0] + (Object.keys(o).length ? '#risk=' + encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(o))))) : '');
+    const box = $('rlinkbox'); box.hidden = false; box.value = url; box.select(); try { navigator.clipboard && navigator.clipboard.writeText(url).then(() => { $('rlink').textContent = 'Link copied'; setTimeout(() => $('rlink').textContent = 'Copy scenario link', 1800); }, () => {}); } catch (e) {} });
+  let lastInp = null;
+  function renderRiskEffect() {
+    riskBadge(); const box = $('reffect'); box.replaceChildren(); if (!result || !lastInp) return;
+    const o = overrides(); const best = result.best;
+    if (!Object.keys(o).length) { box.append(el('span', null, best ? `Using the baseline. Best route: ${best.label} (${best.sub}), ${usd(best.total)}, ${dfmt(best.days)} days.` : 'No permitted route with these settings.')); return; }
+    const cur = {}; RK.forEach(k => cur[k] = Object.assign({}, rget(k)));
+    loadOverrides(null); const rb = S.compute(M, A, lastInp); RK.forEach(k => Object.assign(rget(k), cur[k]));
+    const b0 = rb.best; const p = el('p');
+    p.textContent = (best ? `With your settings the best route is ${best.label} (${best.sub}) at ${usd(best.total)}, ${dfmt(best.days)} days, risk score ${best.score}.` : 'With your settings no permitted route remains.') +
+      (b0 ? ` With the baseline it was ${b0.label} (${b0.sub}) at ${usd(b0.total)}, ${dfmt(b0.days)} days, risk score ${b0.score}.` : '') +
+      (best && b0 ? ` Change: ${best.total >= b0.total ? '+' : '−'}${usd(Math.abs(best.total - b0.total))}, ${best.days >= b0.days ? '+' : '−'}${dfmt(Math.abs(best.days - b0.days))} days.` : '');
+    box.append(p);
   }
 
   // ---------- assumptions ----------
@@ -1012,11 +1118,13 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
     const used = new Set(result.options.flatMap(o => o.chokes));
     Object.entries(D.choke).forEach(([id, c]) => { if (id === 'redsea') return; const p = proj([c.lon, c.lat]); if (!p || isNaN(p[0])) return;
       if (p[0] < -10 || p[0] > W + 10 || p[1] < -10 || p[1] > H + 10) return;
-      const col = c.status === 'red' ? css('--bad') : c.status === 'amber' ? css('--warn') : css('--ok');
+      const col = c.status === 'red' || c.status === 'closed' ? css('--bad') : c.status === 'amber' ? css('--warn') : css('--ok');
       const g = svg.append('g').attr('transform', `translate(${p[0]},${p[1]})`).style('cursor', 'help');
-      g.append('circle').attr('r', used.has(id) ? 7 : 5).attr('fill', css('--panel')).attr('stroke', col).attr('stroke-width', 2.5);
-      g.append('circle').attr('r', 2.4).attr('fill', col);
-      g.on('mouseenter', (ev) => { tip.replaceChildren(); const b = document.createElement('b'); b.textContent = c.name; const s = document.createElement('div'); s.textContent = c.note; tip.append(b, s); tip.hidden = false;
+      if (c.status === 'closed') { g.append('circle').attr('r', 8).attr('fill', css('--bad')).attr('stroke', css('--panel')).attr('stroke-width', 2);
+        g.append('path').attr('d', 'M-3.5,-3.5L3.5,3.5M3.5,-3.5L-3.5,3.5').attr('stroke', '#fff').attr('stroke-width', 2.2).attr('stroke-linecap', 'round'); }
+      else { g.append('circle').attr('r', used.has(id) ? 7 : 5).attr('fill', css('--panel')).attr('stroke', col).attr('stroke-width', 2.5);
+      g.append('circle').attr('r', 2.4).attr('fill', col); }
+      g.on('mouseenter', (ev) => { tip.replaceChildren(); const b = document.createElement('b'); b.textContent = `${c.name} · ${({ green: 'Open', amber: 'Watch', red: 'High risk', closed: 'Closed' })[c.status]}`; const s = document.createElement('div'); s.textContent = c.status === 'closed' ? 'Closed in your risk settings: routes avoid it.' : c.note; tip.append(b, s); tip.hidden = false;
           const bx = $('mapbox').getBoundingClientRect(); const sc = bx.width / W; let x = p[0] * sc + 12, y = p[1] * sc + 12; if (x + 260 > bx.width) x = p[0] * sc - 270; tip.style.left = x + 'px'; tip.style.top = y + 'px'; })
         .on('mouseleave', () => tip.hidden = true); });
     // ports used by selected option
@@ -1124,12 +1232,13 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
 
   function renderChokes() {
     const ul = $('chokes'); ul.replaceChildren();
-    Object.entries(D.choke).filter(([id]) => id !== 'redsea').sort((a, b) => ({ red: 0, amber: 1, green: 2 })[a[1].status] - ({ red: 0, amber: 1, green: 2 })[b[1].status]).forEach(([id, c]) => {
+    const ord = { closed: -1, red: 0, amber: 1, green: 2 };
+    Object.entries(D.choke).concat([['airspace', D.airspace]]).filter(([id]) => id !== 'redsea').sort((a, b) => ord[a[1].status] - ord[b[1].status]).forEach(([id, c]) => {
       const li = el('li'); const nb = el('b', null, c.name + ' ');
-      nb.append(tipEl(c.name + ': model inputs', `Status ${({ green: 'open', amber: 'watch', red: 'high risk' })[c.status]}. Chance of disruption ${Math.round(c.p * 100)}%, delay if disrupted ${c.delay} days${c.reroute_usd ? ', extra diversion cost $' + c.reroute_usd + ' per 40ft' : ''}${c.war_usd ? ', war-risk surcharge $' + c.war_usd + ' per 40ft' : ''}${c.ins_pct ? ', cargo insurance +' + c.ins_pct + '%' : ''}. Risk score points: ${c.status === 'red' ? 30 : c.status === 'amber' ? 12 : 2}.`));
-      li.append(pill(c.status, ({ green: 'Open', amber: 'Watch', red: 'High risk' })[c.status]), nb);
-      const extra = c.war_usd ? ` War-risk surcharge in model: ${usd(c.war_usd)} per FEU.` : '';
-      const d = el('span', 'rd', c.note + extra); if (c.src) { d.append(' '); const a = el('a', null, 'Source'); a.href = c.src; a.target = '_blank'; a.rel = 'noopener'; d.append(a); } li.append(d); ul.append(li); });
+      nb.append(tipEl(c.name + ': model inputs', `Status ${({ green: 'open', amber: 'watch', red: 'high risk', closed: 'closed' })[c.status]}. Chance of disruption ${Math.round(c.p * 100)}%, delay if disrupted ${c.delay} days${c.reroute_usd ? ', extra diversion cost $' + c.reroute_usd + ' per 40ft' : ''}${c.war_usd ? ', war-risk surcharge $' + c.war_usd + ' per 40ft' : ''}${c.ins_pct ? ', cargo insurance +' + c.ins_pct + '%' : ''}. Risk score points: ${c.status === 'closed' ? 'route blocked' : c.status === 'red' ? 30 : c.status === 'amber' ? 12 : 2}.`));
+      li.append(pill(c.status, ({ green: 'Open', amber: 'Watch', red: 'High risk', closed: 'Closed' })[c.status]), nb);
+      const extra = c.status !== 'closed' && c.war_usd ? ` War-risk surcharge: ${usd(c.war_usd)} per 40ft.` : '';
+      const d = el('span', 'rd', (c.status === 'closed' ? 'Closed in your risk settings: routes avoid it.' : c.note) + extra); if (c.src) { d.append(' '); const a = el('a', null, 'Source'); a.href = c.src; a.target = '_blank'; a.rel = 'noopener'; d.append(a); } li.append(d); ul.append(li); });
   }
 
   function renderScatter() {
@@ -1212,21 +1321,24 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
     $('caption').textContent = 'Press play to follow the cargo from factory to importer.'; }
 
   function run() {
+    state.risk = overrides();
     try { localStorage.setItem('fcp-state2', JSON.stringify(state)); } catch (e) {}
+    renderChokes(); if (typeof riskTable === 'function' && !document.querySelector('#rtab tbody tr')) riskTable();
     cargo = cargoTotals();
     if (state.from === state.to) { plan = { opts: [], chosen: null, cheapest: null }; renderTotals(); renderDensity(); $('eqgrid').replaceChildren(); $('eqWhy').replaceChildren(); $('lpViz').replaceChildren(); result = { options: [], gc: 0 }; $('rec').replaceChildren(el('div', 'empty', 'Choose two different cities.')); $('opts').querySelector('tbody').replaceChildren(); mapDraw(); renderScatter(); roles(); return; }
     const base = { from: state.from, to: state.to, fromPort: state.fromPort, toPort: state.toPort, value: cargo.value, kg: Math.max(1, cargo.kg), cbm: Math.max(0.01, cargo.cbm), rate: state.rate };
     plan = planEquip(base);
     const inp = Object.assign({}, base, { equip: plan.chosen ? plan.chosen.equip : { n40: 1 } });
-    result = plan.chosen && plan.chosen.r ? plan.chosen.r : S.compute(M, A, inp);
+    result = plan.chosen && plan.chosen.r ? plan.chosen.r : S.compute(M, A, inp); lastInp = inp;
     renderTotals(); renderDensity(); renderEquip(); renderViz();
     // linear slopes for break-even (total = a + b × value)
     const r0 = S.compute(M, A, Object.assign({}, inp, { value: 0 })), r1 = S.compute(M, A, Object.assign({}, inp, { value: 1e6 }));
     result.slopes = {}; r0.options.forEach(o => { const o1 = r1.options.find(x => x.id === o.id); if (o1) result.slopes[o.id] = { a: o.total, b: (o1.total - o.total) / 1e6 }; });
     if (!result.options.some(o => o.id === selId)) selId = result.best ? result.best.id : (result.options[0] || {}).id;
-    stopAnim(); roles(); renderRec(); renderTable(); renderDetail(); renderJourney(); mapDraw(); renderScatter();
+    stopAnim(); roles(); renderRec(); renderTable(); renderDetail(); renderJourney(); mapDraw(); renderScatter(); renderRiskEffect();
+    const n = Object.keys(state.risk).length; $('chokeSub').replaceChildren(document.createTextNode(n ? `Your scenario (${n} change${n > 1 ? 's' : ''}) · ` : 'Baseline 11 Oct 2026 · '), Object.assign(el('a', null, 'Change risk settings ↓'), { href: '#risk' })); $('chokeSub').querySelector('a').style.color = 'var(--accent)';
   }
-  renderChokes(); syncInputs(); linesTable(); run();
+  syncInputs(); linesTable(); riskTable(); run();
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { stopAnim(); mapDraw(); renderScatter(); if (plan) { renderDensity(); renderViz(); } }, 150); });
   setTimeout(() => { if (!anim) play(); }, 900);
   if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { mapDraw(); renderScatter(); if (plan) { renderDensity(); renderViz(); } });
