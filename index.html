@@ -7,7 +7,7 @@
 <title>Freight Corridor Planner</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* Layout: chart-room console. A route bar on top (From ⇄ To), the corridor map beside the recommendation,
    then the ranked options, the selected route's bill of costs and its risk log. */
@@ -62,8 +62,8 @@ select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid 
 .mapctl .btn:hover{filter:brightness(1.08)}
 .caption{background:color-mix(in srgb,var(--panel) 90%,transparent);border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:12px;color:var(--ink);max-width:100%}
 .journey{display:flex;gap:0;overflow-x:auto;padding-bottom:6px}
-.jstep{flex:1 0 132px;min-width:132px;position:relative;padding:10px 12px 10px 0;border-top:3px solid var(--line);transition:border-color .2s}
-.jstep::before{content:"";position:absolute;top:-8px;left:0;width:12px;height:12px;border-radius:50%;background:var(--panel);border:3px solid var(--line);transition:border-color .2s,background .2s}
+.jstep{flex:1 0 132px;min-width:132px;position:relative;padding-block:10px;padding-inline:0 12px;border-top:3px solid var(--line);transition:border-color .2s}
+.jstep::before{content:"";position:absolute;top:-8px;inset-inline-start:0;width:12px;height:12px;border-radius:50%;background:var(--panel);border:3px solid var(--line);transition:border-color .2s,background .2s}
 .jstep.k-sea{border-top-color:var(--accent)} .jstep.k-air{border-top-color:var(--route2)} .jstep.k-rail{border-top-color:var(--route3)} .jstep.k-road{border-top-style:dotted;border-top-color:var(--ink)}
 .jstep.on::before{background:var(--accent);border-color:var(--accent)}
 .jstep.done::before{background:var(--ink);border-color:var(--ink)}
@@ -72,7 +72,7 @@ select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid 
 .jstep .jm{font-family:var(--mono);font-size:11px;color:var(--muted)}
 .jstep .jc{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .jend{flex:0 0 120px;padding:10px 0;border-top:3px solid transparent;position:relative}
-.jend::before{content:"";position:absolute;top:-9px;left:0;width:14px;height:14px;border-radius:3px;background:var(--ink)}
+.jend::before{content:"";position:absolute;top:-9px;inset-inline-start:0;width:14px;height:14px;border-radius:3px;background:var(--ink)}
 .tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.15);padding:8px 10px;font-size:12px;max-width:260px;z-index:5}
 .tip b{display:block;margin-bottom:2px}
 /* recommendation */
@@ -97,9 +97,9 @@ select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid 
 .tbl{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
 #opts{min-width:720px}#legs{min-width:480px}
-th{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:right;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
-td{padding:9px 8px;border-bottom:1px solid var(--soft);text-align:right;vertical-align:top}
-th:first-child,td:first-child,th.l,td.l{text-align:left}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:end;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid var(--soft);text-align:end;vertical-align:top}
+th:first-child,td:first-child,th.l,td.l{text-align:start}
 tr.opt{cursor:pointer}
 tr.opt:hover td{background:var(--soft)}
 tr.opt.sel td{background:var(--accent-soft)}
@@ -187,9 +187,65 @@ details.assume summary{cursor:pointer;font-family:var(--display);font-stretch:85
 select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:var(--warn);background:var(--warn-bg)} select.st-red{color:var(--bad);background:var(--bad-bg)} select.st-closed{color:var(--paper);background:var(--ink)}
 .edited{display:inline-block;margin-top:3px;font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.03em}
 .rbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 12px}
-.reffect{border-left:3px solid var(--accent);background:var(--soft);padding:8px 12px;border-radius:0 6px 6px 0;font-size:13px;margin-top:12px}
+.reffect{border-inline-start:3px solid var(--accent);background:var(--soft);padding:8px 12px;border-start-end-radius:6px;border-end-end-radius:6px;font-size:13px;margin-top:12px}
 .reffect p{margin:0}
 #rlinkbox{margin-top:8px;font-family:var(--mono);font-size:12px}
+/* guided flow */
+.top h1{font-size:clamp(26px,4vw,38px);font-weight:800;letter-spacing:-.01em}
+.top .lede{margin:6px 0 8px;color:var(--muted);font-size:15px;max-width:70ch}
+.sticky{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;background:color-mix(in srgb,var(--paper) 94%,transparent);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);margin-inline:calc(-1 * clamp(16px,3vw,32px));padding:8px clamp(16px,3vw,32px);border-bottom:1px solid var(--line)}
+.stepper{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.stp{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 14px 4px 4px;cursor:pointer;font:inherit;color:var(--ink);text-align:left;min-width:0}
+.stp:hover{border-color:var(--accent)}
+.stp .n{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--soft);font-family:var(--mono);font-size:12px;flex:none}
+.stp .tx{display:flex;flex-direction:column;min-width:0;line-height:1.15}
+.stp .t{font-weight:600;font-size:13px}
+.stp .s{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
+.stp.on{border-color:var(--accent);background:var(--accent-soft)} .stp.on .n{background:var(--accent);color:#fff}
+.sres{margin-inline-start:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font:inherit;font-size:13px;color:var(--ink);cursor:pointer;border:1px solid var(--accent);border-radius:8px;padding:5px 12px;background:var(--panel);text-align:left}
+.sres .big{font-family:var(--display);font-stretch:85%;font-weight:800;font-size:20px;line-height:1}
+.sres .lab{color:var(--muted);font-size:12px}
+.sn{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--mono);font-size:14px;margin-inline-end:10px;vertical-align:3px;font-stretch:100%}
+.stepnav{display:flex;justify-content:space-between;gap:10px;margin-top:18px;padding-top:12px;border-top:1px solid var(--soft)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+.btn.pri:hover{filter:brightness(1.08)}
+.reshead{font-size:24px;font-weight:700;margin-top:6px}
+section,#results{scroll-margin-top:84px}
+body.simple .x-expert{display:none!important}
+.langbtn{font-family:"IBM Plex Sans Arabic",var(--body);font-size:13px;padding:5px 10px}
+html[lang="ar"] .langbtn{font-family:var(--body)}
+svg,.gauge,.stack{direction:ltr}
+html[lang="ar"]{--body:"IBM Plex Sans Arabic","IBM Plex Sans",system-ui,sans-serif;--display:"IBM Plex Sans Arabic","Archivo",system-ui,sans-serif;--mono:"IBM Plex Sans Arabic","IBM Plex Mono",system-ui,sans-serif}
+html[lang="ar"] *{letter-spacing:0!important}
+html[lang="ar"] .eyebrow,html[lang="ar"] th,html[lang="ar"] .field label,html[lang="ar"] td[data-label]::before{text-transform:none}
+html[lang="ar"] h1,html[lang="ar"] h2,html[lang="ar"] h3,html[lang="ar"] .big,html[lang="ar"] .v,html[lang="ar"] .c{font-stretch:100%}
+html[lang="ar"] .stp .t{font-size:14px} html[lang="ar"] body{font-size:14.5px;line-height:1.6}
+html[lang="ar"] .only-en,html:not([lang="ar"]) .only-ar{display:none!important}
+body.simple .detail:not(.x-expert){grid-template-columns:1fr}
+/* phone cards */
+@media (max-width:640px){
+  .stp{padding:4px 10px 4px 4px} .stp .s{display:none}
+  .sticky{gap:6px 8px;padding-block:6px}
+  .stp .n{width:22px;height:22px}
+  .sres{order:3;margin-inline-start:0;width:100%;justify-content:space-between;padding:4px 10px;gap:8px}
+  .sres .lab,.sres .mode{display:none} .sres .big{font-size:18px}
+  #modeSeg{margin-inline-start:auto} #modeSeg button{padding:5px 8px}
+  #rpre{display:grid;grid-template-columns:1fr 1fr;width:100%} #rpre button{padding:7px 6px}
+  #lines,#rtab{min-width:0!important}
+  #planner .tbl,#risk .tbl{overflow:visible}
+  #lines thead,#rtab thead{display:none}
+  #lines tbody,#rtab tbody{display:flex;flex-direction:column;gap:10px}
+  #lines tr,#rtab tr{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;border:1px solid var(--line);border-radius:8px;padding:10px;position:relative;background:var(--panel)}
+  #lines td,#rtab td{display:block;border:0;padding:0!important;text-align:left;min-width:0!important;width:auto!important;max-width:none!important}
+  #lines td[data-label]::before,#rtab td[data-label]::before{content:attr(data-label);display:block;font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  #lines td.mat,#rtab td:first-child,#rtab td.note{grid-column:1/-1}
+  #lines td.mat{padding-inline-end:38px!important}
+  #lines td:last-child{position:absolute;top:10px;inset-inline-end:10px}
+  #lines input,#rtab input,#rtab select.st{width:100%!important;text-align:left!important}
+  #rtab td.na{display:none}
+  #legs{min-width:0} #legs th:nth-child(2),#legs td:nth-child(2){display:none}
+  .stepnav .btn{flex:1}
+}
 @media (max-width:560px){.od{grid-template-columns:1fr}.swap{justify-self:center;transform:rotate(90deg)}.swap:hover{transform:rotate(270deg)}.mini{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -197,8 +253,28 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
 </head>
 <body>
 <div class="wrap">
-  <header class="routebar">
-    <div class="eyebrow">Freight Corridor Planner · sea rates Drewry WCI 1 Oct 2026 · chokepoint status 11 Oct 2026 · road distances Google Maps</div>
+  <header class="top">
+    <h1>Freight Corridor Planner</h1>
+    <p class="lede only-en">Compare sea, air, rail and road for your shipment on total landed cost, time and risk. Three steps: route, cargo, risk. The result updates as you go.</p>
+    <p class="lede only-ar">قارن الشحن البحري والجوي والسككي والبري لشحنتك على أساس التكلفة الإجمالية حتى الوصول والوقت والمخاطر. ثلاث خطوات: المسار، الحمولة، المخاطر. النتيجة تتحدّث مع كل تعديل.</p>
+    <p class="note only-ar" style="margin:0 0 6px">أداة تخطيطية شخصية مجانية: الأرقام تقديرات وليست عروض أسعار، وليست أداة رسمية لأي مؤسسة.</p>
+    <p class="note only-en" style="margin:0 0 6px">A free personal planning tool: figures are estimates, not quotes, and it is not an official tool of any institution.</p>
+    <div class="eyebrow">Sea rates Drewry WCI 1 Oct 2026 · baseline risk 11 Oct 2026 · road distances Google Maps · planning estimates, not quotes</div>
+  </header>
+
+  <div class="sticky" id="sticky">
+    <div class="stepper" role="tablist" aria-label="Steps">
+      <button class="stp" type="button" role="tab" data-step="1"><span class="n">1</span><span class="tx"><span class="t">Route</span><span class="s" id="s1"></span></span></button>
+      <button class="stp" type="button" role="tab" data-step="2"><span class="n">2</span><span class="tx"><span class="t">Cargo</span><span class="s" id="s2"></span></span></button>
+      <button class="stp" type="button" role="tab" data-step="3"><span class="n">3</span><span class="tx"><span class="t">Risk</span><span class="s" id="s3"></span></span></button>
+    </div>
+    <button class="sres" type="button" id="sres" title="Go to the result"></button>
+    <button class="btn langbtn" type="button" id="langBtn" lang="ar">العربية</button>
+    <div class="seg" id="modeSeg" role="group" aria-label="View mode"><button type="button" data-mode="simple">Simple</button><button type="button" data-mode="expert">Expert</button></div>
+  </div>
+
+  <section class="panel routebar steppanel" id="step1" data-step="1">
+    <div class="sec-h"><h2><span class="sn">1</span>Route: where do the goods travel?</h2><span class="note">Choose the exporter's and importer's cities. Use ⇄ to swap roles.</span></div>
     <div class="od">
       <div class="field city"><label for="from">From: exporter's factory</label><select id="from"></select></div>
       <button class="swap" id="swap" type="button" title="Swap exporter and importer" aria-label="Swap origin and destination">⇄</button>
@@ -209,12 +285,12 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
       <div class="field"><label for="fromPort">Export port</label><select id="fromPort"></select></div>
       <div class="field"><label for="toPort">Import port</label><select id="toPort"></select></div>
       <div class="field"><label for="rate">Cost of money (% a year) <span class="info" tabindex="0" data-tip="Your financing cost or required return. Used to price the days the cargo spends in transit.">i</span></label><input id="rate" type="number" min="0" max="100" step="0.5" value="10"></div>
-      <div class="cargosum" id="cargosum"></div>
     </div>
-  </header>
+    <div class="stepnav"><span></span><button class="btn pri" type="button" data-go="2">Next: cargo →</button></div>
+  </section>
 
-  <section class="panel" id="planner">
-    <div class="sec-h"><h2>Container and load planner</h2><span class="note">Define what you ship. The planner loads it into each container type, prices the full route for each, and picks the cheapest.</span></div>
+  <section class="panel steppanel" id="planner" data-step="2">
+    <div class="sec-h"><h2><span class="sn">2</span>Container and load planner</h2><span class="note">Define what you ship. The planner loads it into each container type, prices the full route for each, and picks the cheapest.</span></div>
     <div class="tbl"><table id="lines"><thead><tr>
       <th class="l">Material</th><th>Quantity</th><th class="l">Packed as</th><th>Length m</th><th>Width m</th><th>Height m</th><th>Kg per unit</th><th>Max layers</th><th>Value per unit $</th><th></th>
     </tr></thead><tbody></tbody></table></div>
@@ -233,8 +309,23 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
         <div class="lpViz" id="lpViz"></div>
       </div>
     </div>
+    <div class="stepnav"><button class="btn" type="button" data-go="1">← Route</button><button class="btn pri" type="button" data-go="3">Next: risk →</button></div>
   </section>
 
+  <section class="panel steppanel" id="risk" data-step="3">
+    <div class="sec-h"><h2><span class="sn">3</span>Corridor risk settings</h2><span id="rbadge"></span></div>
+    <p class="note" style="margin:0 0 6px">Risk on each corridor changes with conflicts and circumstances, so you set it. Start from a scenario, then fine-tune any corridor in the detailed settings. Freight rates and transit times stay model-based.</p>
+    <div class="rbar"><span class="eyebrow">Start from</span><div class="seg" id="rpre"></div><button class="btn" id="rreset" type="button">Reset to baseline</button><button class="btn" id="rlink" type="button">Copy scenario link</button></div>
+    <div class="reffect" id="reffect"></div>
+    <button class="btn" id="rtoggle" type="button" aria-expanded="false" style="margin-top:12px">Show detailed settings ▾</button>
+    <div id="rdetail" hidden style="margin-top:12px">
+    <div class="tbl"><table id="rtab"><thead><tr><th class="l">Corridor</th><th class="l">Status</th><th>Chance of disruption %</th><th>Delay if disrupted, days</th><th>War surcharge $/40ft</th><th>Insurance add-on %</th><th>Diversion cost $/40ft</th><th class="l">Notes</th></tr></thead><tbody></tbody></table></div>
+    <input id="rlinkbox" type="text" readonly hidden aria-label="Scenario link">
+    </div>
+    <div class="stepnav"><button class="btn" type="button" data-go="2">← Cargo</button><button class="btn pri" type="button" data-go="results">See the result →</button></div>
+  </section>
+
+  <h2 class="reshead" id="results">Result for this shipment</h2>
   <section class="main">
     <div class="panel mapbox" id="mapbox">
       <svg id="map" role="img" aria-label="Map of shipping corridors for the selected origin and destination"></svg>
@@ -245,12 +336,12 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
     <aside class="panel rec" id="rec"></aside>
   </section>
 
-  <section class="panel">
+  <section class="panel x-expert">
     <div class="sec-h"><h2>How the shipment moves</h2><span class="note" id="jSub"></span></div>
     <div class="journey" id="journey"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel x-expert">
     <div class="sec-h"><h2>All options, ranked by total cost</h2><span class="note">Click a row to see it on the map and in the breakdown. Total = cash cost + cost of time + cost of risk.</span></div>
     <div class="tbl"><table id="opts"><thead><tr>
       <th class="l">Route</th><th>Door to door</th><th>Cash cost</th><th>Cost of time <span class="info" tabindex="0" data-tip="Cargo value × cost of money × days ÷ 365. The money tied up while goods are moving.">i</span></th><th>Cost of risk <span class="info" tabindex="0" data-tip="Expected cost of disruption: probability of a delay or diversion × its cost, summed over the route's chokepoints, borders and transloads.">i</span></th><th>Total</th><th>Per kg</th><th class="l">Risk</th>
@@ -264,14 +355,14 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
       <div class="stackkey" id="stackkey"></div>
       <div class="tbl" style="margin-top:12px"><table id="legs"><thead><tr><th class="l">Leg</th><th>Distance</th><th>Days</th><th>Cost (USD)</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
     </div>
-    <div class="panel">
+    <div class="panel x-expert">
       <div class="sec-h"><h2>Risk indicators</h2><span class="note" id="riskSub"></span></div>
       <div class="score"><span class="mono num" id="scoreNum"></span><div class="gauge"><b id="gaugeMark"></b></div></div>
       <ul class="risklist" id="risks"></ul>
     </div>
   </section>
 
-  <section class="detail">
+  <section class="detail x-expert">
     <div class="panel">
       <div class="sec-h"><h2>Cost versus time</h2><span class="note">Each dot is one option. Down and to the left is better. Cost axis is logarithmic.</span></div>
       <svg id="scatter" role="img" aria-label="Scatter chart of total cost against door-to-door days"></svg>
@@ -282,16 +373,7 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
     </div>
   </section>
 
-  <section class="panel" id="risk">
-    <div class="sec-h"><h2>Corridor risk settings</h2><span id="rbadge"></span></div>
-    <p class="note" style="margin:0 0 6px">Risk on each corridor changes with conflicts and circumstances, so you set it. Choose a status for each chokepoint and adjust its numbers; every cost, risk score and recommendation on this page updates at once. Freight rates and transit times stay model-based.</p>
-    <div class="rbar"><span class="eyebrow">Start from</span><div class="seg" id="rpre"></div><button class="btn" id="rreset" type="button">Reset to baseline</button><button class="btn" id="rlink" type="button">Copy scenario link</button></div>
-    <div class="tbl"><table id="rtab"><thead><tr><th class="l">Corridor</th><th class="l">Status</th><th>Chance of disruption %</th><th>Delay if disrupted, days</th><th>War surcharge $/40ft</th><th>Insurance add-on %</th><th>Diversion cost $/40ft</th><th class="l">Notes</th></tr></thead><tbody></tbody></table></div>
-    <input id="rlinkbox" type="text" readonly hidden aria-label="Scenario link">
-    <div class="reffect" id="reffect"></div>
-  </section>
-
-  <section class="panel">
+  <section class="panel x-expert">
     <details class="assume" id="assume">
       <summary>Assumptions you can change</summary>
       <p class="note" style="margin:8px 0 0">Defaults are estimates calibrated to published 2026 rates. Replace them with a forwarder's quote to get a firm figure. Changes apply instantly.</p>
@@ -300,17 +382,28 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
     </details>
   </section>
 
-  <section class="panel" id="glossary">
-    <div class="sec-h"><h2>Terms, rules and methods</h2><span class="note">Every <span class="info" tabindex="0" data-k="info">i</span> on this page opens one of these explanations.</span></div>
+  <section class="panel x-expert" id="glossary">
+    <details class="assume">
+      <summary>Terms, rules and methods</summary>
+      <p class="note" style="margin:8px 0 12px">Every <span class="info" tabindex="0" data-k="info">i</span> on this page opens one of these explanations.</p>
     <div class="gloss" id="glossBody"></div>
+    </details>
   </section>
 
-  <section class="panel sources">
+  <section class="panel sources only-en">
     <div class="sec-h"><h2 style="font-size:18px">Method and sources</h2></div>
     <p><b>Sea freight</b> is modelled per container as (base + rate × nautical miles) × a trade-lane factor, calibrated so Shanghai–Rotterdam, Shanghai–Genoa, Shanghai–Los Angeles and Shanghai–New York match the <a href="https://sourcing.center/news/2026-10-03-drewry-wci-4434-tp-firm-asia-europe-soft-oct1" target="_blank" rel="noopener">Drewry World Container Index of 1 Oct 2026</a> ($3,399, $3,702, $7,835 and $10,428 per 40ft). Other lanes are model estimates. Sea distance follows the drawn lane network; days use 15 knots plus port time, feeder transshipment and customs.</p>
     <p><b>Road</b> distances between cities and ports come from Google Maps (Shanghai city–Yangshan and Busan are estimates). Truck costs use regional per-km estimates plus border fees. <b>Rail</b> uses the ERAI China–Europe average of about $10,100 per 40ft (<a href="https://index1520.com/en/analytics/monitoring-logisticheskogo-rynka-evrazii-iyul-2026-vypusk-35/" target="_blank" rel="noopener">July 2026</a>); Middle Corridor rates are estimates. <b>Air</b> uses a distance-based rate inside the 2026 Asia–Europe range of $3.20–6.50 per kg (<a href="https://theflyingengineer.com/air-cargo-shipping-cost-per-kg-2026-guide/" target="_blank" rel="noopener">source</a>).</p>
     <p><b>Risk</b>: chokepoint status from <a href="https://www.falcon-us.com/news/2026/9/16/selected-container-services-returning-to-the-suez-canal" target="_blank" rel="noopener">carrier updates on the Red Sea and Suez</a> and <a href="https://insurancebusinessmag.com/asia/news/marine/hormuz-warrisk-rates-face-fresh-pressure-as-iranus-clashes-resume-588290.aspx" target="_blank" rel="noopener">Hormuz war-risk premiums</a>. War-risk surcharges, delay probabilities and insurance add-ons are model assumptions. Routes through Russia or Belarus are flagged for sanctions and excluded from the recommendation. The baseline risk settings reflect 11 Oct 2026; users can change every corridor's status and risk inputs, including closing a chokepoint, in Corridor risk settings. This tool gives planning estimates, not quotes; customs duties and taxes are not included.</p>
     <p><b>Containers</b>: typical ISO internal dimensions and maximum payloads (20ft 5.90 × 2.35 × 2.39 m, 28,200 kg; 40ft 12.03 × 2.35 × 2.39 m, 26,700 kg; 40ft high cube 2.70 m high, 26,500 kg). Carriers' boxes vary by a few centimetres and kilograms. Loading is calculated lane by lane, testing lengthwise and crosswise placement; it does not model weight distribution or securing. LCL pricing (per revenue ton, about 2.5 times the full-container rate per m³ plus freight-station fees) is a model assumption.</p>
+  </section>
+
+  <section class="panel sources only-ar">
+    <div class="sec-h"><h2 style="font-size:18px">المنهجية والمصادر</h2></div>
+    <p><b>الشحن البحري</b> يُحسب لكل حاوية بمعادلة (أساس + سعر × الأميال البحرية) × معامل خط التجارة، ومعايَر بحيث تطابق خطوط شنغهاي–روتردام وشنغهاي–جنوة وشنغهاي–لوس أنجلوس وشنغهاي–نيويورك <a href="https://sourcing.center/news/2026-10-03-drewry-wci-4434-tp-firm-asia-europe-soft-oct1" target="_blank" rel="noopener">مؤشر Drewry العالمي للحاويات في 1 تشرين الأول 2026</a> (3,399$ و3,702$ و7,835$ و10,428$ لكل حاوية 40 قدماً). الخطوط الأخرى تقديرات من النموذج. المسافة البحرية تتبع شبكة الخطوط المرسومة، والأيام تُحسب بسرعة 15 عقدة إضافة إلى وقت الموانئ والمسافنة والجمارك.</p>
+    <p><b>المسافات البرية</b> بين المدن والموانئ من خرائط Google (مسافتا شنغهاي–يانغشان وبوسان تقديريتان)، وتكاليف الشاحنات تقديرات إقليمية لكل كيلومتر مع رسوم الحدود. <b>السكك الحديدية</b> تستخدم متوسط ERAI بين الصين وأوروبا البالغ نحو 10,100$ لكل حاوية 40 قدماً (<a href="https://index1520.com/en/analytics/monitoring-logisticheskogo-rynka-evrazii-iyul-2026-vypusk-35/" target="_blank" rel="noopener">تموز 2026</a>)، وأسعار الممر الأوسط تقديرية. <b>الشحن الجوي</b> يستخدم سعراً مرتبطاً بالمسافة ضمن نطاق 2026 بين آسيا وأوروبا البالغ 3.20–6.50$ لكل كغ (<a href="https://theflyingengineer.com/air-cargo-shipping-cost-per-kg-2026-guide/" target="_blank" rel="noopener">المصدر</a>).</p>
+    <p><b>المخاطر</b>: حالة نقاط الاختناق في خط الأساس من <a href="https://www.falcon-us.com/news/2026/9/16/selected-container-services-returning-to-the-suez-canal" target="_blank" rel="noopener">تحديثات خطوط الملاحة حول البحر الأحمر والسويس</a> و<a href="https://insurancebusinessmag.com/asia/news/marine/hormuz-warrisk-rates-face-fresh-pressure-as-iranus-clashes-resume-588290.aspx" target="_blank" rel="noopener">أقساط مخاطر الحرب في هرمز</a>. رسوم مخاطر الحرب واحتمالات التأخير وعلاوات التأمين افتراضات من النموذج. المسارات عبر روسيا أو بيلاروس معلَّمة بسبب العقوبات ومستبعدة من التوصية. خط الأساس يعكس 11 تشرين الأول 2026، ويستطيع المستخدم تغيير حالة كل ممر ومدخلات مخاطره، بما في ذلك إغلاق نقطة اختناق. هذه الأداة تعطي تقديرات تخطيطية وليست عروض أسعار، والرسوم الجمركية والضرائب غير مشمولة.</p>
+    <p><b>الحاويات</b>: أبعاد داخلية وحمولات قصوى نموذجية وفق معايير ISO (‏20 قدماً 5.90 × 2.35 × 2.39 م، 28,200 كغ؛ 40 قدماً 12.03 × 2.35 × 2.39 م، 26,700 كغ؛ 40 قدماً عالية بارتفاع 2.70 م، 26,500 كغ). تختلف حاويات الشركات ببضعة سنتيمترات وكيلوغرامات. يُحسب التحميل صفاً صفاً مع تجربة الوضع الطولي والعرضي، ولا يحسب توزيع الوزن أو التثبيت. تسعير الشحنة الجزئية (لكل طن شحن، نحو 2.5 ضعف سعر الحاوية الكاملة للمتر المكعب مع رسوم محطة التجميع) افتراض من النموذج.</p>
   </section>
 </div>
 
@@ -597,8 +690,9 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
   const dfmt = (v) => (Math.round(v * 2) / 2).toFixed(1);
   const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   let A = Object.assign({}, S.DEFAULTS);
-  let state = { from: 'shanghai', to: 'damascus', fromPort: null, toPort: 'all', rate: 10, lines: null, equipMode: 'auto', equipPick: null };
+  let state = { from: 'shanghai', to: 'damascus', fromPort: null, toPort: 'all', rate: 10, lines: null, equipMode: 'auto', equipPick: null, step: 1, mode: 'simple', riskOpen: false, lang: 'en' };
   try { const sv = JSON.parse(localStorage.getItem('fcp-state2') || 'null'); if (sv && M.city[sv.from] && M.city[sv.to]) state = Object.assign(state, sv); } catch (e) {}
+  try { const ql = new URLSearchParams(location.search).get('lang'); if (ql === 'ar' || ql === 'en') state.lang = ql; } catch (e) {}
   let result = null, selId = null, plan = null, cargo = null;
 
   // ---------- explanations ----------
@@ -670,6 +764,286 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
     planner: ['Container and load planner', 'Describe each material, its packing size, weight, stacking and value. The planner works out how many containers of each type you need, which limit (space or weight) is reached first, and which choice gives the lowest total cost for the selected route.'],
     incoterms: ['Who pays which leg (Incoterms)', 'Contracts use Incoterms to split costs. FOB: the seller pays to load at the export port; the buyer pays the ship onwards. CIF: the seller also pays freight and insurance to the import port. DDP: the seller pays everything to the buyer\'s door.']
   };
+  // ---------- Arabic glossary ----------
+  const G_AR = {
+    info: ["كيف تستخدم أزرار i", "مرّر المؤشر أو انقر على أي i لتعرف معنى المصطلح وطريقة حساب الرقم والقاعدة التي يقوم عليها."],
+    route: ["المسار", "طريقة واحدة لنقل البضاعة من مصنع المصدّر إلى المستورد. يتكوّن المسار من سلسلة مراحل: شاحنة، ميناء، سفينة أو طائرة أو قطار، ميناء، ثم شاحنة."],
+    feu: ["وحدتا FEU وTEU", "مقاسات الحاويات. TEU تعني حاوية 20 قدماً (نحو 33 م³)، وFEU تعني حاوية 40 قدماً (نحو 67 م³). أسعار الشحن البحري والسككي تُحسب لكل حاوية."],
+    locode: ["رموز الموانئ (UN/LOCODE)", "رموز من خمسة أحرف تمنحها الأمم المتحدة لكل ميناء: حرفان للبلد وثلاثة للمكان. مثال: CNSHA = الصين، شنغهاي؛ SYTTS = سوريا، طرطوس؛ NLRTM = هولندا، روتردام."],
+    exportPort: ["ميناء التصدير", "الميناء الذي تُحمَّل فيه الحاوية على السفينة. اختر ميناءً آخر لترى كيف يتغيّر المسار والتكلفة."],
+    importPort: ["ميناء الاستيراد", "الميناء الذي تُفرَّغ فيه الحاوية. خيار «مقارنة الكل» يحسب كل الموانئ التي تخدم مدينة المستورد لتعرف أيّ مدخل أرخص أو أكثر أماناً."],
+    value: ["قيمة البضاعة", "مجموع الكمية × قيمة الوحدة لكل المواد، أي قيمة الفاتورة. تؤثر في ثلاث تكاليف: التأمين (نسبة من القيمة)، وتكلفة الوقت، وتكلفة المخاطر. كلما ارتفعت القيمة أصبحت المسارات الأسرع أكثر جاذبية."],
+    weight: ["الوزن", "الوزن الإجمالي للبضاعة بالكيلوغرام. يُستخدم في الشحن الجوي وفي حساب التكلفة لكل كيلوغرام."],
+    volume: ["الحجم والوزن المحتسب", "شركات الطيران تحتسب الأكبر بين الوزن الفعلي والوزن الحجمي. القاعدة: الوزن الحجمي = الحجم بالمتر المكعب × 167 كغ. البضائع الخفيفة كبيرة الحجم تدفع ثمن المساحة التي تشغلها."],
+    rate: ["تكلفة الأموال", "تكلفة التمويل السنوية أو العائد المطلوب. البضاعة أثناء النقل رأس مال لا يحقق عائداً. القاعدة: التكلفة اليومية = قيمة البضاعة × المعدل ÷ 365."],
+    gc: ["المسافة الجوية المباشرة", "أقصر مسافة بين نقطتين على الكرة الأرضية كما تطير الطائرة. السفن والشاحنات تقطع مسافة أطول لأنها تتبع السواحل والقنوات والطرق."],
+    cash: ["التكلفة النقدية", "المبالغ التي تدفعها فعلاً: أجرة الشحن، والرسوم الإضافية، ومناولة الموانئ والجمارك، والنقل البري، والتأمين. الرسوم الجمركية والضرائب غير مشمولة."],
+    time: ["تكلفة الوقت", "القاعدة: قيمة البضاعة × تكلفة الأموال × أيام النقل ÷ 365. مثال: 200,000$ × 10% × 35 يوماً ÷ 365 = 1,918$. لا تُدفع لأحد، لكنها تكلفة اقتصادية حقيقية للمسارات البطيئة."],
+    risk: ["تكلفة المخاطر", "التكلفة المتوقعة للاضطرابات. القاعدة: لكل خطر على المسار: الاحتمال × (أيام التأخير × التكلفة اليومية للأموال + الرسوم الإضافية). مثال: باب المندب = 25% × (14 يوماً × التكلفة اليومية + 800$)."],
+    total: ["التكلفة الإجمالية حتى الوصول", "التكلفة النقدية + تكلفة الوقت + تكلفة المخاطر. هذا هو الرقم المستخدم لترتيب المسارات، لأن أرخص أجرة شحن ليست دائماً الخيار الأرخص."],
+    perkg: ["التكلفة لكل كيلوغرام", "التكلفة الإجمالية حتى الوصول ÷ وزن البضاعة. مفيدة للمقارنة مع سعر بيع البضاعة."],
+    level: ["مستوى المخاطر", "منخفض أو متوسط أو مرتفع حسب درجة المخاطر: أقل من 25 منخفض، من 25 إلى 49 متوسط، 50 فأكثر مرتفع. أي بند أحمر (مثل نقطة اختناق عالية المخاطر أو عقوبات) يجعل المسار مرتفع المخاطر."],
+    score: ["درجة المخاطر (0–100)", "نقاط لكل خطر: نقطة اختناق حمراء 30، برتقالية 12، مفتوحة 2؛ كل معبر حدودي بري 6؛ كل مسافنة 5؛ نقل يتجاوز 45 يوماً 5؛ مناقلات السكك 15؛ قيود المجال الجوي 10؛ العقوبات 100. الحد الأقصى 100."],
+    best: ["الأفضل قيمة", "المسار ذو أدنى تكلفة إجمالية حتى الوصول (نقدية + وقت + مخاطر). المسارات المعلَّمة بسبب العقوبات لا يُوصى بها أبداً."],
+    fastest: ["الأسرع", "المسار ذو أقل عدد أيام من الباب إلى الباب، بغض النظر عن التكلفة."],
+    safest: ["الأقل مخاطرة", "المسار ذو أدنى درجة مخاطر؛ وعند التساوي يُختار الأرخص."],
+    breakeven: ["نقطة التعادل للشحن الجوي", "الشحن الجوي أغلى بكثير لكنه يوفّر أياماً. كلما ارتفعت قيمة البضاعة زادت قيمة كل يوم يُوفَّر. نقطة التعادل هي قيمة البضاعة التي تتساوى عندها التكلفة الإجمالية للشحن الجوي مع أفضل مسار."],
+    road: ["مرحلة الشاحنة", "التكلفة = 150$ ثابتة + الكيلومترات × السعر الإقليمي لكل حاوية 40 قدماً (سوريا 1.00$/كم، تركيا 1.30$، الاتحاد الأوروبي 2.10$، الولايات المتحدة 2.60$) + 250$ لكل حدود جمركية. الوقت = الكيلومترات ÷ 550 كم يومياً + نصف يوم للتحميل + يوم لكل حدود. المسافات من خرائط Google."],
+    exportPort_leg: ["مناولة التصدير", "رسوم مناولة المحطة (THC) أي أجرة الميناء لرفع الحاوية، إضافة إلى نحو 150$ للوثائق (بوليصة الشحن) والتخليص الجمركي للتصدير. نحو يوم واحد."],
+    importPort_leg: ["مناولة الاستيراد والجمارك", "رسوم مناولة المحطة في بلد الوصول إضافة إلى 250$ للتخليص الجمركي. مدة التخليص حسب البلد (سوريا نحو 4 أيام، الخليج 2–3، روتردام يوم واحد). الرسوم الجمركية وضريبة القيمة المضافة غير مشمولة."],
+    sea: ["الشحن البحري", "سعر خط الملاحة لحاوية واحدة من ميناء إلى ميناء. النموذج: (600$ + 0.25$ × الأميال البحرية) × معامل خط التجارة، معايَر على مؤشر Drewry العالمي للحاويات بتاريخ 1 تشرين الأول 2026. أيام الإبحار = الأميال البحرية ÷ (15 عقدة × 24 ساعة) + 3 أيام في الموانئ."],
+    nm: ["الأميال البحرية والعُقَد", "المسافة البحرية تُقاس بالميل البحري: 1 ميل بحري = 1.852 كم. سرعة السفينة بالعقدة: 1 عقدة = 1 ميل بحري في الساعة. بسرعة 15 عقدة تقطع السفينة 360 ميلاً بحرياً (667 كم) يومياً."],
+    lane: ["معامل خط التجارة", "أسعار الشحن تتبع الطلب لا المسافة فقط. آسيا ← الولايات المتحدة مرتفع (معامل نحو 3–4)، آسيا ← أوروبا أقل (نحو 0.9–1.15)، ورحلات العودة إلى آسيا رخيصة (نحو 0.35) لأن السفن تعود شبه فارغة."],
+    feeder: ["المسافنة (سفينة التغذية)", "السفن الكبيرة ترسو في موانئ المحور فقط. تُنقل الحاوية إلى سفينة تغذية أصغر للموانئ الأصغر مثل اللاذقية وطرطوس وبيروت والعقبة وأم قصر. النموذج: +350$ لكل حاوية 40 قدماً و+4 أيام."],
+    war: ["رسم مخاطر الحرب", "رسم إضافي تفرضه خطوط الملاحة في المياه الخطرة. يمكنك ضبطه لكل نقطة اختناق في إعدادات مخاطر الممرات. كما يضيف المؤمِّنون غطاء مخاطر الحرب إلى قسط تأمين البضاعة."],
+    air: ["الشحن الجوي", "يُسعَّر لكل كيلوغرام محتسب. سعر النموذج = (1.20$ + 0.00042$ × الكيلومترات) × معامل الخط، ضمن نطاق 2026 بين آسيا وأوروبا (3.20–6.50$/كغ)، إضافة إلى نحو 0.25$/كغ مناولة في كل مطار."],
+    airPort: ["مناولة المطار", "التفتيش الأمني ومناولة المحطة والوثائق في المطار، تُحسب لكل كيلوغرام محتسب، إضافة إلى التخليص الجمركي في بلد الوصول."],
+    rail: ["الشحن بالسكك الحديدية", "قطارات كتلية من مركز شيآن في الصين. المسار الشمالي: كازاخستان، روسيا، بيلاروس، بولندا (متوسط ERAI نحو 10,100$ لكل حاوية 40 قدماً؛ معلَّم بسبب العقوبات). الممر الأوسط: كازاخستان، عبّارة بحر قزوين، أذربيجان، جورجيا، تركيا (تقدير نحو 7,800$ حتى إسطنبول)."],
+    railFeeder: ["نقل تغذية للسكك", "نقل الحاوية من مدينة المصنع إلى محطة القطارات الكتلية في شيآن (تقدير 600$ ويومان؛ تشونغتشينغ نفسها مركز)."],
+    railTerminal: ["مناولة محطة السكك", "التفريغ في محطة السكك والتخليص الجمركي للاستيراد (تقدير)."],
+    roadCustoms: ["الجمارك عند الوصول", "للنقل البري عبر الحدود: تخليص الاستيراد والتفتيش عند الحدود أو في المستودع الداخلي. النقل الداخلي لا يدفع شيئاً."],
+    insurance: ["تأمين البضاعة", "القاعدة: قيمة البضاعة × (0.25% أساسي + علاوة مخاطر الحرب). العلاوات تُضبط لكل ممر في إعدادات مخاطر الممرات. يغطي الفقدان أو التلف أثناء النقل."],
+    choke: ["نقطة الاختناق", "ممر بحري ضيق تضطر سفن كثيرة لعبوره، مثل قناة السويس أو مضيق هرمز أو مضيق ملقا. إذا أُغلق أو أصبح خطراً، تنتظر السفن أو تدفع أكثر أو تسلك طريقاً أطول بكثير."],
+    chokeModel: ["كيف تُقيَّم نقاط الاختناق", "لكل نقطة اختناق حالة (مفتوح، مراقبة، مخاطر مرتفعة، مغلق)، واحتمال اضطراب، والتأخير الذي يسببه، ورسم مخاطر الحرب، وعلاوة التأمين، وتكلفة التحويل. يمكنك ضبطها كلها في إعدادات مخاطر الممرات، وهي تغذي درجة المخاطر والتكلفة النقدية وتكلفة المخاطر."],
+    border: ["معبر حدودي بري", "كل حدود جمركية تضيف أوراقاً وانتظاراً وتفتيشاً. النموذج: 250$ ويوم لكل معبر، مع احتمال 15% لتأخير يومين. الاتحاد الأوروبي يُعد منطقة جمركية واحدة."],
+    sanctions: ["علامة العقوبات", "المسارات عبر روسيا أو بيلاروس تحمل تعرّضاً مرتفعاً لعقوبات الاتحاد الأوروبي والولايات المتحدة والمملكة المتحدة. تُعرض للمقارنة لكن لا يُوصى بها أبداً."],
+    stack: ["شريط توزيع التكلفة", "يبيّن كيف تتوزع التكلفة الإجمالية حتى الوصول بين الشحن الرئيسي والرسوم الإضافية والموانئ والجمارك والنقل البري والتأمين وتكلفة الوقت وتكلفة المخاطر."],
+    scatter: ["التكلفة مقابل الوقت", "كل نقطة مسار. اليسار أسرع، والأسفل أرخص. اللون يمثل مستوى المخاطر. محور التكلفة لوغاريتمي ليظهر الجوي والبحري على الرسم نفسه."],
+    lanes: ["خطوط الملاحة", "الشبكة الزرقاء الباهتة هي خطوط الملاحة الرئيسية التي يستخدمها النموذج لتوجيه السفن بين الموانئ وعبر القنوات وحول الرؤوس."],
+    play: ["تشغيل الشحنة", "يحرّك المسار المختار بسرعة تتناسب مع الأيام الفعلية لكل مرحلة. تتوقف الحاوية في الموانئ للمناولة والجمارك."],
+    cont20: ["حاوية 20 قدماً قياسية (TEU)", "الأبعاد الداخلية نحو 5.90 م طولاً × 2.35 م عرضاً × 2.39 م ارتفاعاً، أي نحو 33 م³. تحمل حتى نحو 28,200 كغ. الخيار المعتاد للبضائع الثقيلة."],
+    cont40: ["حاوية 40 قدماً قياسية (FEU)", "الأبعاد الداخلية نحو 12.03 × 2.35 × 2.39 م، أي نحو 67.7 م³، حتى نحو 26,700 كغ. ضعف مساحة حاوية 20 قدماً بنحو 1.7 ضعف أجرة الشحن، لكنها لا تحمل وزناً أكبر."],
+    contHC: ["حاوية 40 قدماً عالية (هاي كيوب)", "مثل حاوية 40 قدماً لكن أعلى بـ 30 سم من الداخل (2.70 م)، أي نحو 76 م³، حتى نحو 26,500 كغ. مجدية فقط إذا سمح الارتفاع الإضافي بطبقة إضافية. سعر النموذج: أعلى بـ 3% من حاوية 40 قدماً القياسية."],
+    lcl: ["الشحنة الجزئية (LCL)", "أقل من حمولة حاوية: تتشارك بضاعتك الحاوية مع شاحنين آخرين. السعر لكل «طن شحن» (w/m) = الأكبر بين الأمتار المكعبة والأطنان. أغلى بنحو 2.5 مرة لكل متر مكعب من الحاوية الكاملة، مع رسوم محطة التجميع ونحو 5 أيام إضافية. مناسبة لأقل من نحو 15 م³."],
+    mix: ["مزيج 40 + 20 قدماً", "املأ حاويات 40 قدماً أولاً، ثم ضع المتبقي في حاوية 20 قدماً بدلاً من إرسال حاوية 40 قدماً نصف فارغة."],
+    cube: ["الامتلاء بالحجم والامتلاء بالوزن", "الامتلاء بالحجم: تمتلئ الحاوية مساحةً قبل بلوغ حد الوزن (بضائع خفيفة مثل الملابس). الامتلاء بالوزن: يُبلغ حد الوزن مع بقاء مساحة فارغة (بضائع ثقيلة مثل البلاط أو الحديد)."],
+    density: ["كثافة البضاعة", "الوزن ÷ الحجم بالكيلوغرام لكل متر مكعب. القاعدة: حاوية 40 قدماً تبلغ حد وزنها عند نحو 26,700 ÷ 67.7 = 394 كغ/م³، وحاوية 20 قدماً عند نحو 28,200 ÷ 33.2 = 850. دون 394 تمتلئ البضاعة بالحجم في أي حاوية، وفوق 850 تبلغ حد الوزن أولاً حتى في حاوية 20 قدماً."],
+    payload: ["حد الوزن (الحمولة القصوى)", "أقصى وزن بضاعة يُسمح للحاوية بحمله. الطرق في كثير من الدول تسمح بأقل من تصنيف الحاوية، لذا اضبط سقف الوزن على الطرق في الافتراضات إذا كانت الشاحنات مقيّدة في أحد الطرفين."],
+    stacking: ["الطبقات (التستيف)", "عدد الطبقات = الأقل بين الحد الأقصى لتستيف الوحدة وعدد ما يتسع تحت السقف (الارتفاع الداخلي ÷ ارتفاع الوحدة). البضائع الهشة أو الثقيلة جداً تقتصر غالباً على طبقة واحدة."],
+    floorplan: ["كيف يُحسب التحميل", "توضع الوحدات في صفوف على طول الحاوية. يجرّب المخطِّط وضعها طولياً وعرضياً ويختار الترتيب الذي يتسع لأكثر عدد. تُملأ كل حاوية حتى تنفد الأرضية أو حد الوزن. الأرقام في مخطط الأرضية تبيّن عدد الطبقات. تقدير تخطيطي لا يحسب توزيع الوزن أو التثبيت."],
+    pallet: ["وحدات التحميل", "تُعدّ البضائع بوحدات تحميل: منصّات (القياسية 1.2 × 1.0 م، وارتفاعها المحمّل عادة 1.0 إلى 1.2 م)، أو صناديق خشبية، أو خزانات IBC، أو حزم، أو كراتين. أدخل مقاس ووزن وحدة واحدة كما هي معبّأة."],
+    auto: ["الاختيار التلقائي للحاوية", "لكل خيار حاوية يحمّل المخطِّط بضاعتك، ويسعّر كل المسارات بهذه المعدات (الشحن، المناولة، النقل البري، التأمين، تكلفة الوقت وتكلفة المخاطر)، ويختار الخيار ذا أدنى تكلفة إجمالية على أرخص مسار بالحاويات."],
+    riskSettings: ["إعدادات مخاطر الممرات", "أنت من يحدد درجة خطورة كل نقطة اختناق والمجال الجوي في الشرق الأوسط، لأنها تتغير مع النزاعات. خط الأساس هو الوضع في 11 تشرين الأول 2026 وفق أخبار خطوط الملاحة وشركات التأمين. تُحفظ إعداداتك في متصفحك ويمكن مشاركتها برابط."],
+    statusRules: ["قواعد الحالة", "مفتوح ومراقبة ومخاطر مرتفعة تضيف 2 و12 و30 نقطة لدرجة مخاطر المسار البحري (المجال الجوي: 2 و10 و25). مغلق يزيل الممر: تسلك السفن طريقاً آخر (مثل رأس الرجاء الصالح) أو يختفي الخيار البحري؛ وإغلاق المجال الجوي يلغي الشحن الجوي من الشرق الأوسط وإليه. اختيار الحالة يملأ أرقاماً نموذجية يمكنك تعديلها."],
+    pDisrupt: ["احتمال الاضطراب", "احتمال أن تتأخر شحنة على هذا الممر أو تُحوَّل. يُستخدم في تكلفة المخاطر: الاحتمال × (أيام التأخير × التكلفة اليومية للأموال + تكلفة التحويل)."],
+    delayDays: ["التأخير عند الاضطراب", "الأيام الإضافية التي تخسرها الشحنة عند حدوث اضطراب: انتظار أو مواعيد قوافل أو تحويل مسار."],
+    warUSD: ["رسم مخاطر الحرب", "رسم نقدي تضيفه خطوط الملاحة لكل حاوية 40 قدماً عند عبور منطقة عالية المخاطر (حاوية 20 قدماً تدفع 60%). يُضاف إلى كل مسار يعبر نقطة الاختناق."],
+    insAdd: ["علاوة التأمين", "قسط تأمين إضافي على البضاعة، كنسبة من قيمتها، يفرضه المؤمِّنون لمخاطر الحرب على هذا الممر."],
+    divert: ["تكلفة التحويل", "تكلفة إضافية لكل حاوية 40 قدماً إذا اضطرت السفينة للتحويل أو الانتظار بسبب اضطراب. تُرجَّح باحتمال الاضطراب في تكلفة المخاطر."],
+    planner: ["مخطِّط الحاويات والتحميل", "صِف كل مادة ومقاس تعبئتها ووزنها وتستيفها وقيمتها. يحسب المخطِّط عدد الحاويات اللازمة من كل نوع، وأيّ حد يُبلغ أولاً (المساحة أم الوزن)، وأيّ خيار يعطي أدنى تكلفة إجمالية للمسار المختار."],
+    incoterms: ["من يدفع كل مرحلة (Incoterms)", "تستخدم العقود شروط Incoterms لتقسيم التكاليف. FOB: البائع يدفع حتى التحميل في ميناء التصدير والمشتري يدفع ما بعده. CIF: البائع يدفع أيضاً الشحن والتأمين حتى ميناء الاستيراد. DDP: البائع يدفع كل شيء حتى باب المشتري."],
+    door: ["من الباب إلى الباب", "إجمالي الأيام من مصنع المصدّر إلى مستودع المستورد: النقل البري، ووقت الموانئ، والإبحار أو الطيران، والمسافنة، والجمارك."]
+  };
+  // ---------- Arabic translation layer ----------
+  const AR = state.lang === 'ar';
+  const AR_NAMES = {
+    // cities
+    'Shanghai': 'شنغهاي', 'Ningbo': 'نينغبو', 'Shenzhen': 'شنتشن', 'Guangzhou': 'غوانغتشو', 'Beijing': 'بكين', 'Chongqing': 'تشونغتشينغ', 'Busan': 'بوسان', 'Tokyo': 'طوكيو',
+    'Ho Chi Minh City': 'مدينة هو تشي منه', 'Bangkok': 'بانكوك', 'Singapore': 'سنغافورة', 'Jakarta': 'جاكرتا', 'Mumbai': 'مومباي', 'Karachi': 'كراتشي', 'Colombo': 'كولومبو',
+    'Dubai': 'دبي', 'Riyadh': 'الرياض', 'Jeddah': 'جدة', 'Baghdad': 'بغداد', 'Amman': 'عمّان', 'Damascus': 'دمشق', 'Aleppo': 'حلب', 'Homs': 'حمص', 'Beirut': 'بيروت',
+    'Istanbul': 'إسطنبول', 'Cairo': 'القاهرة', 'Lagos': 'لاغوس', 'Mombasa': 'مومباسا', 'Johannesburg': 'جوهانسبرغ', 'Rotterdam': 'روتردام', 'Hamburg': 'هامبورغ', 'Milan': 'ميلانو',
+    'Barcelona': 'برشلونة', 'Athens': 'أثينا', 'London': 'لندن', 'Warsaw': 'وارسو', 'New York': 'نيويورك', 'Chicago': 'شيكاغو', 'Houston': 'هيوستن', 'Los Angeles': 'لوس أنجلوس',
+    'Mexico City': 'مكسيكو سيتي', 'São Paulo': 'ساو باولو', 'Sydney': 'سيدني',
+    // ports
+    'Tianjin': 'تيانجين', 'Shanghai Yangshan': 'شنغهاي يانغشان', 'Ningbo-Zhoushan': 'نينغبو-تشوشان', 'Shenzhen Yantian': 'شنتشن يانتيان', 'Guangzhou Nansha': 'غوانغتشو نانشا',
+    'Ho Chi Minh City Cat Lai': 'هو تشي منه كات لاي', 'Laem Chabang': 'ليم تشابانغ', 'Jakarta Tanjung Priok': 'جاكرتا تانجونغ بريوك', 'Nhava Sheva': 'نهافا شيفا', 'Jebel Ali': 'جبل علي',
+    'Khor Fakkan (outside Hormuz)': 'خورفكان (خارج هرمز)', 'Dammam': 'الدمام', 'Umm Qasr': 'أم قصر', 'Aqaba': 'العقبة', 'Latakia': 'اللاذقية', 'Tartus': 'طرطوس', 'Mersin': 'مرسين',
+    'Istanbul Ambarli': 'إسطنبول أمبارلي', 'Alexandria': 'الإسكندرية', 'Port Said': 'بورسعيد', 'Lagos Apapa': 'لاغوس أبابا', 'Durban': 'ديربان', 'Genoa': 'جنوة', 'Piraeus': 'بيرايوس',
+    'Felixstowe': 'فيليكستو', 'Gdansk': 'غدانسك', 'New York / New Jersey': 'نيويورك / نيوجيرسي', 'Veracruz': 'فيراكروز', 'Manzanillo': 'مانزانيو', 'Santos': 'سانتوس', 'Sydney Port Botany': 'سيدني بورت بوتاني',
+    // regions and countries
+    'Europe & Turkey': 'أوروبا وتركيا', 'Middle East': 'الشرق الأوسط', 'East Asia': 'شرق آسيا', 'Southeast Asia': 'جنوب شرق آسيا', 'South Asia': 'جنوب آسيا', 'Africa': 'أفريقيا', 'Americas': 'الأمريكيتان', 'Oceania': 'أوقيانوسيا',
+    'Kazakhstan': 'كازاخستان', 'Caspian': 'بحر قزوين', 'Azerbaijan': 'أذربيجان', 'Georgia': 'جورجيا', 'Turkey': 'تركيا', 'Balkans': 'البلقان', 'Germany': 'ألمانيا', 'Russia': 'روسيا', 'Belarus': 'بيلاروس', 'Poland': 'بولندا', 'China': 'الصين', "Xi'an": 'شيآن',
+    // chokepoints
+    'Bab el-Mandeb / southern Red Sea': 'باب المندب / جنوب البحر الأحمر', 'Bab el-Mandeb': 'باب المندب', 'Red Sea passage': 'ممر البحر الأحمر', 'Suez Canal': 'قناة السويس', 'Strait of Hormuz': 'مضيق هرمز',
+    'Strait of Malacca': 'مضيق ملقا', 'Panama Canal': 'قناة بنما', 'Strait of Gibraltar': 'مضيق جبل طارق', 'Cape of Good Hope': 'رأس الرجاء الصالح', 'Middle East airspace': 'المجال الجوي للشرق الأوسط',
+    // materials
+    'Clothing in cartons': 'ملابس في كراتين', 'Shoes in cartons': 'أحذية في كراتين', 'Flat-pack furniture': 'أثاث مفكّك', 'Electronics in cartons': 'إلكترونيات في كراتين', 'Bottled olive oil': 'زيت زيتون معبّأ',
+    'Rice or sugar in bags': 'أرز أو سكر في أكياس', 'Ceramic tiles': 'بلاط سيراميك', 'Liquid chemicals in IBC tanks': 'مواد كيميائية سائلة في خزانات IBC', 'Steel bars': 'قضبان حديد', 'Machinery in a wooden crate': 'آلات في صندوق خشبي', 'Custom item': 'صنف مخصّص',
+    // containers
+    'Shared container (LCL)': 'حاوية مشتركة (LCL)', '20ft standard': '20 قدماً قياسية', '40ft standard': '40 قدماً قياسية', '40ft high cube': '40 قدماً عالية (HC)', '40ft + 20ft mix': 'مزيج 40 + 20 قدماً'
+  };
+  const AR_UNITS = { pallet: 'منصّة', carton: 'كرتونة', crate: 'صندوق', bundle: 'حزمة', 'IBC tank': 'خزان IBC', unit: 'وحدة', bag: 'كيس' };
+  const AR_EXACT = {
+    'Freight Corridor Planner': 'مخطِّط ممرات الشحن', 'exports': 'تصدّر', 'imports': 'تستورد', 'Go to the result': 'الانتقال إلى النتيجة', 'Swap exporter and importer': 'تبديل المصدّر والمستورد',
+    'Your scenario': 'سيناريوك', 'Edited': 'معدَّل', 'baseline high risk': 'خط الأساس: مخاطر مرتفعة', 'baseline watch': 'خط الأساس: مراقبة', 'baseline open': 'خط الأساس: مفتوح', 'baseline closed': 'خط الأساس: مغلق',
+    'Truck': 'شاحنة', 'Port and customs': 'ميناء وجمارك', 'Ship': 'سفينة', 'Plane': 'طائرة', 'Train': 'قطار', 'Transshipment': 'مسافنة', 'Step': 'مرحلة', 'Compare all': 'مقارنة الكل',
+    'Sea rates Drewry WCI 1 Oct 2026 · baseline risk 11 Oct 2026 · road distances Google Maps · planning estimates, not quotes': 'أسعار البحر: مؤشر Drewry في 1 تشرين الأول 2026 · خط أساس المخاطر 11 تشرين الأول 2026 · المسافات البرية: خرائط Google · تقديرات تخطيطية وليست عروض أسعار',
+    'Route': 'المسار', 'Cargo': 'الحمولة', 'Risk': 'المخاطر', 'Simple': 'مبسّط', 'Expert': 'متقدّم',
+    'Route: where do the goods travel?': 'المسار: من أين وإلى أين تنتقل البضاعة؟',
+    "Choose the exporter's and importer's cities. Use ⇄ to swap roles.": 'اختر مدينتي المصدّر والمستورد. استخدم ⇄ لتبديل الدورين.',
+    "From: exporter's factory": 'من: مصنع المصدّر', "To: importer's city": 'إلى: مدينة المستورد', 'Export port': 'ميناء التصدير', 'Import port': 'ميناء الاستيراد', 'Cost of money (% a year)': 'تكلفة الأموال (% سنوياً)',
+    'Next: cargo →': 'التالي: الحمولة ←', 'Next: risk →': 'التالي: المخاطر ←', 'See the result →': 'عرض النتيجة ←', '← Route': 'المسار →', '← Cargo': 'الحمولة →',
+    'Container and load planner': 'مخطِّط الحاويات والتحميل',
+    'Define what you ship. The planner loads it into each container type, prices the full route for each, and picks the cheapest.': 'حدّد ما تشحنه. يحمّله المخطِّط في كل نوع حاوية، ويسعّر المسار كاملاً لكل نوع، ويختار الأرخص.',
+    'Material': 'المادة', 'Quantity': 'الكمية', 'Packed as': 'التعبئة', 'Length m': 'الطول م', 'Width m': 'العرض م', 'Height m': 'الارتفاع م', 'Kg per unit': 'كغ للوحدة', 'Max layers': 'أقصى طبقات', 'Value per unit $': 'قيمة الوحدة $',
+    '+ Add material': '+ إضافة مادة', 'Pick a material to load typical sizes and weights, then edit any number. Mixed cargo is allowed.': 'اختر مادة لتحميل المقاسات والأوزان النموذجية، ثم عدّل أي رقم. الحمولة المختلطة مسموحة.',
+    'Container options for this route': 'خيارات الحاويات لهذا المسار', 'Auto: cheapest': 'تلقائي: الأرخص', 'I choose': 'أختار بنفسي', 'How the goods sit inside': 'كيف تُرصّ البضاعة داخل الحاوية',
+    'Corridor risk settings': 'إعدادات مخاطر الممرات', 'Start from': 'ابدأ من', 'Reset to baseline': 'العودة إلى خط الأساس', 'Copy scenario link': 'نسخ رابط السيناريو', 'Link copied': 'تم نسخ الرابط',
+    'Risk on each corridor changes with conflicts and circumstances, so you set it. Start from a scenario, then fine-tune any corridor in the detailed settings. Freight rates and transit times stay model-based.': 'مخاطر كل ممر تتغير مع النزاعات والظروف، لذلك أنت من يحددها. ابدأ من سيناريو ثم عدّل أي ممر في الإعدادات التفصيلية. أسعار الشحن وأزمنة النقل تبقى من النموذج.',
+    'Show detailed settings ▾': 'عرض الإعدادات التفصيلية ▾', 'Hide detailed settings ▴': 'إخفاء الإعدادات التفصيلية ▴',
+    'Corridor': 'الممر', 'Status': 'الحالة', 'Chance of disruption %': 'احتمال الاضطراب %', 'Delay if disrupted, days': 'التأخير عند الاضطراب، أيام', 'War surcharge $/40ft': 'رسم الحرب $/40 قدماً', 'Insurance add-on %': 'علاوة التأمين %', 'Diversion cost $/40ft': 'تكلفة التحويل $/40 قدماً', 'Notes': 'ملاحظات',
+    'Baseline 11 Oct 2026': 'خط الأساس 11 تشرين الأول 2026', 'Calm market': 'سوق هادئة', 'Red Sea escalation': 'تصعيد البحر الأحمر', 'Gulf escalation': 'تصعيد الخليج', 'Baseline': 'خط الأساس',
+    'Open': 'مفتوح', 'Watch': 'مراقبة', 'High risk': 'مخاطر مرتفعة', 'Closed': 'مغلق',
+    'Sea chokepoint': 'نقطة اختناق بحرية', 'Air corridor, Middle East': 'ممر جوي، الشرق الأوسط', 'Between Bab el-Mandeb and Suez': 'بين باب المندب والسويس',
+    'Closed: ships cannot pass; routes divert or disappear.': 'مغلق: لا تستطيع السفن العبور؛ تتحوّل المسارات أو تختفي.', 'Closed: no air option to or from the Middle East.': 'مغلق: لا يوجد خيار جوي من الشرق الأوسط وإليه.',
+    'Closed in your risk settings: routes avoid it.': 'مغلق في إعدادات المخاطر لديك: المسارات تتجنّبه.',
+    'Result for this shipment': 'نتيجة هذه الشحنة', '▶ Play shipment': '▶ تشغيل الشحنة', '■ Stop': '■ إيقاف', '↺ Replay': '↺ إعادة التشغيل',
+    "Faint blue lines are the world's main shipping lanes. Press play to follow the cargo.": 'الخطوط الزرقاء الباهتة هي خطوط الملاحة الرئيسية في العالم. اضغط تشغيل لتتبع الشحنة.',
+    'Press play to follow the cargo from factory to importer.': 'اضغط تشغيل لتتبع الشحنة من المصنع إلى المستورد.',
+    'Sea': 'بحري', 'Road': 'بري', 'Air': 'جوي', 'Rail': 'سككي', 'Lanes ': 'الخطوط ', ' Chokepoints ': ' نقاط الاختناق ',
+    'How the shipment moves': 'كيف تتحرك الشحنة', 'All options, ranked by total cost': 'كل الخيارات مرتّبة حسب التكلفة الإجمالية',
+    'Click a row to see it on the map and in the breakdown. Total = cash cost + cost of time + cost of risk.': 'انقر على صف لعرضه على الخريطة وفي التفصيل. الإجمالي = التكلفة النقدية + تكلفة الوقت + تكلفة المخاطر.',
+    'Door to door': 'من الباب إلى الباب', 'Cash cost': 'التكلفة النقدية', 'Cost of time': 'تكلفة الوقت', 'Cost of risk': 'تكلفة المخاطر', 'Total': 'الإجمالي', 'Per kg': 'لكل كغ',
+    'Cost breakdown': 'تفصيل التكلفة', 'Leg': 'المرحلة', 'Distance': 'المسافة', 'Days': 'الأيام', 'Cost (USD)': 'التكلفة ($)', 'Total landed cost': 'التكلفة الإجمالية حتى الوصول',
+    'Risk indicators': 'مؤشرات المخاطر', 'Cost versus time': 'التكلفة مقابل الوقت', 'Each dot is one option. Down and to the left is better. Cost axis is logarithmic.': 'كل نقطة خيار. الأسفل واليسار أفضل. محور التكلفة لوغاريتمي.',
+    'Chokepoint watch': 'مراقبة نقاط الاختناق', 'Change risk settings ↓': 'تغيير إعدادات المخاطر ↓',
+    'Assumptions you can change': 'افتراضات يمكنك تغييرها', 'Reset to defaults': 'العودة إلى القيم الافتراضية',
+    "Defaults are estimates calibrated to published 2026 rates. Replace them with a forwarder's quote to get a firm figure. Changes apply instantly.": 'القيم الافتراضية تقديرات معايَرة على أسعار 2026 المنشورة. استبدلها بعرض سعر من وكيل الشحن للحصول على رقم مؤكد. التغييرات تُطبَّق فوراً.',
+    'Terms, rules and methods': 'المصطلحات والقواعد والمنهجية', 'Every': 'كل زر', 'on this page opens one of these explanations.': 'في هذه الصفحة يفتح أحد هذه الشروح.',
+    'Shipment basics': 'أساسيات الشحن', 'Containers and loading': 'الحاويات والتحميل', 'Costs and how they are calculated': 'التكاليف وطريقة حسابها', 'Risk and recommendation rules': 'قواعد المخاطر والتوصية',
+    'Best value': 'الأفضل قيمة', 'Best value ': 'الأفضل قيمة ', 'Fastest': 'الأسرع', 'Fastest ': 'الأسرع ', 'Lowest risk': 'الأقل مخاطرة', 'Lowest risk ': 'الأقل مخاطرة ', 'Best': 'الأفضل', 'Cheapest': 'الأرخص',
+    'Cost of time + risk': 'تكلفة الوقت + المخاطر', 'Door to door ': 'من الباب إلى الباب ', 'Cash cost ': 'التكلفة النقدية ', 'Cost of time + risk ': 'تكلفة الوقت + المخاطر ',
+    'Risk low': 'مخاطر منخفضة', 'Risk medium': 'مخاطر متوسطة', 'Risk high': 'مخاطر مرتفعة', 'Low': 'منخفضة', 'Medium': 'متوسطة', 'High': 'مرتفعة', 'Sanctions': 'عقوبات',
+    'No permitted route': 'لا يوجد مسار مسموح', 'No permitted route found between these cities.': 'لم يُعثر على مسار مسموح بين هاتين المدينتين.', 'Choose two different cities.': 'اختر مدينتين مختلفتين.',
+    'Main freight': 'الشحن الرئيسي', 'Surcharges': 'رسوم إضافية', 'Port, handling, customs': 'الموانئ والمناولة والجمارك', 'Trucking and feeders': 'النقل البري والتغذية', 'Insurance': 'التأمين',
+    'Cargo insurance': 'تأمين البضاعة', 'Expected cost of delays and diversions on this route': 'التكلفة المتوقعة للتأخيرات والتحويلات على هذا المسار', 'No specific risks flagged.': 'لا توجد مخاطر محددة.', 'Source': 'المصدر',
+    'Exporter loads the cargo': 'المصدّر يحمّل البضاعة', 'Importer receives the goods': 'المستورد يستلم البضاعة',
+    'Units': 'الوحدات', 'Total weight': 'الوزن الإجمالي', 'Total volume': 'الحجم الإجمالي', 'Cargo value': 'قيمة البضاعة', 'Air chargeable weight': 'الوزن المحتسب جوياً',
+    'Units ': 'الوحدات ', 'Total weight ': 'الوزن الإجمالي ', 'Total volume ': 'الحجم الإجمالي ', 'Cargo value ': 'قيمة البضاعة ', 'Air chargeable weight ': 'الوزن المحتسب جوياً ',
+    'Cargo density: will it fill space or weight first? ': 'كثافة البضاعة: هل تمتلئ الحاوية بالحجم أم بالوزن أولاً؟ ',
+    'Light: fills space first in any box → bigger box is cheaper': 'خفيفة: تمتلئ بالحجم أولاً في أي حاوية ← الحاوية الأكبر أرخص', '40ft hits weight first': 'حاوية 40 تبلغ حد الوزن أولاً',
+    'Heavy: hits weight first even in a 20ft → use 20ft': 'ثقيلة: تبلغ حد الوزن أولاً حتى في 20 قدماً ← استخدم 20 قدماً', 'Light': 'خفيفة', 'Heavy': 'ثقيلة',
+    'Floor': 'الأرضية', 'Weight': 'الوزن', 'Of 20ft': 'من 20 قدماً', 'Only for small loads up to about 15 m³.': 'للشحنات الصغيرة فقط حتى نحو 15 م³.',
+    'No sea, rail or road route with the current risk settings.': 'لا يوجد مسار بحري أو سككي أو بري مع إعدادات المخاطر الحالية.', 'Not available': 'غير متاح',
+    'Your share of a 20ft box': 'حصتك من حاوية 20 قدماً', 'SIDE VIEW': 'منظر جانبي', 'FLOOR PLAN (TOP VIEW)': 'مخطط الأرضية (منظر علوي)', 'door': 'الباب', '+30 cm': '+30 سم',
+    "Other shippers' goods": 'بضائع شاحنين آخرين', 'Nothing to load.': 'لا يوجد ما يُحمَّل.',
+    'Sea freight': 'الشحن البحري', 'Containers': 'الحاويات', 'Method and sources': 'المنهجية والمصادر',
+    'Air freight': 'شحن جوي', 'War-risk surcharge': 'رسم مخاطر الحرب', 'Long transit time': 'زمن نقل طويل', 'Schedule reliability': 'موثوقية المواعيد',
+    'Capacity and price swings': 'تقلبات السعة والأسعار', 'Large shipment for air': 'شحنة كبيرة للنقل الجوي', 'Very long haul': 'نقل طويل جداً', 'Customs clearance at destination': 'التخليص الجمركي عند الوصول',
+    'Export handling and security screening': 'مناولة التصدير والتفتيش الأمني', 'Import handling and customs': 'مناولة الاستيراد والجمارك', 'Terminal handling and customs': 'مناولة المحطة والجمارك',
+    'Rail, Middle Corridor': 'سكك، الممر الأوسط', 'Rail, Middle Corridor to Europe': 'سكك، الممر الأوسط إلى أوروبا', 'Rail, Northern route': 'سكك، المسار الشمالي',
+    'Road (full truckload)': 'بري (شاحنة كاملة)', 'Road (shared truck)': 'بري (شاحنة مشتركة)', 'Sanctions: transits Russia and Belarus': 'عقوبات: يعبر روسيا وبيلاروس',
+    'Charged by carriers for high-risk chokepoints (model estimate)': 'تفرضه خطوط الملاحة عند نقاط الاختناق عالية المخاطر (تقدير النموذج)',
+    'Mainline ships call at a hub; a smaller feeder vessel completes the trip': 'السفن الكبيرة ترسو في ميناء محوري وتكمل سفينة تغذية أصغر الرحلة',
+    'Each change of ship adds handling time and risk of missed connections.': 'كل تغيير للسفينة يضيف وقت مناولة وخطر فوات الربط.',
+    'More than 45 days door to door ties up capital and stock.': 'أكثر من 45 يوماً من الباب إلى الباب يجمّد رأس المال والمخزون.',
+    'Container lines run to published schedules, but arrivals often slip by a few days.': 'خطوط الحاويات تعمل وفق جداول منشورة، لكن الوصول يتأخر غالباً بضعة أيام.',
+    'Each crossing adds paperwork, waiting time and inspection risk.': 'كل معبر يضيف أوراقاً ووقت انتظار وخطر تفتيش.',
+    'Pickup and delivery to the cargo terminal (estimate)': 'الاستلام والتسليم إلى محطة الشحن (تقدير)', 'Airport handling and customs clearance': 'مناولة المطار والتخليص الجمركي', 'Delivery to the consignee (estimate)': 'التسليم إلى المستلم (تقدير)',
+    'Air rates move quickly with fuel prices and demand.': 'أسعار الشحن الجوي تتغير بسرعة مع أسعار الوقود والطلب.', 'More than 25 tonnes usually needs a dedicated freighter.': 'أكثر من 25 طناً تحتاج عادة طائرة شحن مخصصة.',
+    'Rail or truck to the block-train terminal (estimate)': 'سكك أو شاحنة إلى محطة القطار الكتلي (تقدير)', 'Rail terminal handling and import clearance (estimate)': 'مناولة محطة السكك وتخليص الاستيراد (تقدير)',
+    'High exposure under EU, US and UK sanctions. Do not use without compliance approval.': 'تعرّض مرتفع لعقوبات الاتحاد الأوروبي والولايات المتحدة والمملكة المتحدة. لا يُستخدم دون موافقة الامتثال.',
+    'Capacity on the Caspian crossing and transfers between rail gauges cause delays.': 'محدودية السعة في عبور بحر قزوين والنقل بين مقاييس السكك المختلفة تسبب تأخيرات.',
+    'Domestic move: no customs': 'نقل داخلي: لا جمارك', 'Import clearance and inspection': 'تخليص الاستيراد والتفتيش',
+    'Driver hours, fuel and security stops add delays on hauls over 3,000 km.': 'ساعات القيادة والوقود ونقاط التفتيش الأمنية تضيف تأخيرات في الرحلات التي تتجاوز 3,000 كم.',
+    'Conflict-related airspace closures in the region can force reroutes, capacity cuts and delays for air cargo to and from the Middle East.': 'إغلاقات المجال الجوي المرتبطة بالنزاعات في المنطقة قد تفرض تغيير المسارات وخفض السعة وتأخيرات للشحن الجوي من الشرق الأوسط وإليه.',
+    'Container lines returning only gradually; traffic still below earlier levels and security not normalised (Sep 2026).': 'خطوط الحاويات تعود تدريجياً فقط؛ الحركة ما زالت دون المستويات السابقة والوضع الأمني لم يستقر (أيلول 2026).',
+    'Transit of the central and northern Red Sea.': 'عبور وسط البحر الأحمر وشماله.',
+    'Operating; transits up 68% year on year (week 39, Drewry). Toll is included in the freight rate.': 'تعمل؛ العبور ارتفع 68% على أساس سنوي (الأسبوع 39، Drewry). رسوم العبور مشمولة في أجرة الشحن.',
+    'Hull war-risk premiums rose from 0.15–0.25% to 3–10% of vessel value per transit; US–Iran clashes resumed (Sep 2026).': 'أقساط تأمين مخاطر الحرب على هياكل السفن ارتفعت من 0.15–0.25% إلى 3–10% من قيمة السفينة لكل عبور؛ استؤنفت الاشتباكات الأمريكية الإيرانية (أيلول 2026).',
+    'Busiest strait by volume; operating normally.': 'أكثر المضائق ازدحاماً بالحجم؛ يعمل بشكل طبيعي.', 'Operating; draught and slot limits can apply in dry season.': 'تعمل؛ قد تُفرض قيود على الغاطس وعدد العبور في موسم الجفاف.',
+    'Operating normally.': 'يعمل بشكل طبيعي.', 'Open ocean route; longer, with winter storm delays possible (Jun–Aug).': 'طريق محيطي مفتوح؛ أطول، مع احتمال تأخيرات العواصف الشتوية (حزيران–آب).',
+    // assumptions
+    'Ship speed (knots)': 'سرعة السفينة (عقدة)', 'Sea and rail freight multiplier': 'مضاعف أجرة الشحن البحري والسككي', 'War-risk surcharge multiplier': 'مضاعف رسم مخاطر الحرب', 'Air rate multiplier': 'مضاعف سعر الشحن الجوي',
+    'Truck rate multiplier': 'مضاعف سعر الشاحنات', 'Base cargo insurance (% of value)': 'تأمين البضاعة الأساسي (% من القيمة)', 'Feeder transshipment (USD per FEU)': 'المسافنة بسفينة تغذية ($ لكل FEU)',
+    'Road border crossing (USD)': 'المعبر الحدودي البري ($)', 'Truck km per day': 'كيلومترات الشاحنة يومياً', 'Road weight cap per container (kg of cargo)': 'سقف الوزن على الطرق لكل حاوية (كغ بضاعة)',
+    'High-cube price vs standard 40ft': 'سعر الحاوية العالية مقابل 40 قدماً القياسية', 'LCL price per m³ vs full-box rate': 'سعر الشحنة الجزئية للمتر المكعب مقابل سعر الحاوية الكاملة',
+    'Average sailing speed. Container ships usually slow-steam at 14–18 knots to save fuel. Lower speed means more days at sea.': 'متوسط سرعة الإبحار. سفن الحاويات تبحر عادة ببطء بين 14 و18 عقدة لتوفير الوقود. السرعة الأقل تعني أياماً أكثر في البحر.',
+    "1.0 = model rate. Enter 1.2 to test freight 20% above the Drewry-calibrated level, or replace it with your forwarder's quote ratio.": '1.0 = سعر النموذج. أدخل 1.2 لاختبار أجرة أعلى بـ 20% من المستوى المعايَر على Drewry، أو ضع نسبة عرض السعر من وكيل الشحن.',
+    'Scales all air freight rates. Air prices move quickly with fuel and demand.': 'يضاعف كل أسعار الشحن الجوي. الأسعار الجوية تتغير بسرعة مع الوقود والطلب.',
+    'Scales all trucking rates per km, for example to reflect fuel prices or security escorts.': 'يضاعف كل أسعار الشاحنات لكل كيلومتر، مثلاً لتعكس أسعار الوقود أو الحراسة الأمنية.',
+    'Base marine cargo insurance as a % of cargo value, before war-risk add-ons. Typical range 0.1–0.5%.': 'التأمين البحري الأساسي على البضاعة كنسبة من قيمتها، قبل علاوات مخاطر الحرب. النطاق المعتاد 0.1–0.5%.',
+    'Cost of moving the container from the mainline ship to a feeder ship at a hub, per 40ft.': 'تكلفة نقل الحاوية من السفينة الرئيسية إلى سفينة تغذية في ميناء محوري، لكل 40 قدماً.',
+    'Fees and agent costs per customs border crossed by truck.': 'الرسوم وأجور الوكلاء لكل حدود جمركية تعبرها الشاحنة.',
+    'How far a truck covers in a day, including rest stops. Lower it for mountain roads or security checks.': 'المسافة التي تقطعها الشاحنة يومياً بما فيها الاستراحات. اخفضها للطرق الجبلية أو نقاط التفتيش.',
+    "Most cargo a truck may legally carry in one container on the roads at origin or destination. 30,000 = no extra limit (the container's own rating applies). Enter for example 20,000 where axle limits are strict; heavy goods will then need more containers.": 'أقصى بضاعة يُسمح للشاحنة قانونياً بحملها في حاوية واحدة على الطرق في بلد المنشأ أو الوصول. 30,000 = لا حد إضافي (يُطبّق تصنيف الحاوية). أدخل مثلاً 20,000 حيث قيود المحاور صارمة؛ ستحتاج البضائع الثقيلة عندها حاويات أكثر.',
+    'Freight for a 40ft high cube relative to a standard 40ft. Usually equal or a few percent higher.': 'أجرة حاوية 40 قدماً عالية نسبةً إلى 40 قدماً قياسية. عادة مساوية أو أعلى ببضعة بالمئة.',
+    'LCL freight per m³ relative to the full-40ft rate per m³. Consolidators typically charge 2 to 3 times as much per m³ as a full box costs.': 'أجرة الشحنة الجزئية للمتر المكعب نسبةً إلى سعر الحاوية الكاملة للمتر المكعب. شركات التجميع تتقاضى عادة 2 إلى 3 أضعاف.',
+    "Scales the war-risk surcharges (Bab el-Mandeb $500, Hormuz $1,200 per 40ft). Enter 0 to model a calm market, 2 to model escalation.": 'يضاعف رسوم مخاطر الحرب. أدخل 0 لسوق هادئة و2 للتصعيد.'
+  };
+  const AR_RULES = [
+    [/(\d[\d,.]*) km by truck/g, '$1 كم بالشاحنة'], [/(\d+) border crossings?/g, '$1 معبر حدودي'], [/ \(distance estimated\)/g, ' (مسافة تقديرية)'],
+    [/^Truck to (.+) airport$/, 'شاحنة إلى مطار $1'], [/^Truck from (.+) airport$/, 'شاحنة من مطار $1'], [/^Truck (.+) port → (.+)$/, 'شاحنة من ميناء $1 إلى $2'], [/^Truck (.+) → (.+) port$/, 'شاحنة من $1 إلى ميناء $2'],
+    [/^Truck (.+) terminal ↔ (.+)$/, 'شاحنة بين محطة $1 و$2'], [/^Truck (.+) → (.+)$/, 'شاحنة من $1 إلى $2'],
+    [/^Export handling at (.+)$/, 'مناولة التصدير في $1'], [/^Import handling and customs at (.+)$/, 'مناولة الاستيراد والجمارك في $1'], [/^Ocean freight (.+) → (.+)$/, 'شحن بحري من $1 إلى $2'],
+    [/^Transshipment to feeder ship \((.+)\)$/, 'مسافنة إلى سفينة تغذية ($1)'], [/^Feeder (.+) ↔ Xi'an rail hub$/, 'نقل تغذية بين $1 ومركز شيآن للسكك'],
+    [/^Terminal handling for (.+), documents and export clearance$/, 'مناولة المحطة لـ $1، والوثائق وتخليص التصدير'],
+    [/^Terminal handling, customs brokerage; about (\d+(?:\.\d+)?) days to clear$/, 'مناولة المحطة والتخليص الجمركي؛ نحو $1 أيام للتخليص'],
+    [/^LCL: unpacking at a freight station \(CFS\), customs brokerage; about (\d+(?:\.\d+)?) days to clear plus deconsolidation$/, 'شحنة جزئية: تفريغ في محطة التجميع (CFS) وتخليص جمركي؛ نحو $1 أيام للتخليص إضافة إلى التفكيك'],
+    [/^LCL: consolidation at a freight station \(CFS\) ([\d.]+) w\/m × \$(\d+), documents, export clearance; waits for the shared box to fill$/, 'شحنة جزئية: تجميع في محطة الشحن (CFS) $1 طن شحن × $2$، وثائق وتخليص تصدير؛ تنتظر امتلاء الحاوية المشتركة'],
+    [/ nautical miles at (\d+(?:\.\d+)?) knots, /g, ' ميل بحري بسرعة $1 عقدة، '], [/(\d[\d,]*) kg chargeable × \$([\d.]+)\/kg/g, '$1 كغ محتسب × $2$/كغ'],
+    [/ \(westbound\)/g, ' (باتجاه الغرب)'], [/ \(eastbound\)/g, ' (باتجاه الشرق)'], [/ border transloads incl\. Caspian ferry/g, ' مناقلات حدودية بما فيها عبّارة قزوين'], [/(\d+) border transloads/g, '$1 مناقلات حدودية'],
+    [/(\d+) road border crossings?/g, '$1 معبر حدودي بري'], [/(\d+) transshipments?/g, '$1 مسافنة'],
+    [/^Sea via Suez$/, 'بحري عبر السويس'], [/^Sea via Cape of Good Hope$/, 'بحري عبر رأس الرجاء الصالح'], [/^Sea via Panama$/, 'بحري عبر بنما'], [/^Sea via Bab el-Mandeb$/, 'بحري عبر باب المندب'], [/^Sea direct$/, 'بحري مباشر'],
+    [/\bSea via Suez\b/g, 'بحري عبر السويس'], [/\bSea via Cape of Good Hope\b/g, 'بحري عبر رأس الرجاء الصالح'], [/\bSea via Panama\b/g, 'بحري عبر بنما'], [/\bSea via Bab el-Mandeb\b/g, 'بحري عبر باب المندب'], [/\bSea direct\b/g, 'بحري مباشر'],
+    [/, via Suez$/, '، عبر السويس'], [/, via Cape of Good Hope$/, '، عبر رأس الرجاء الصالح'], [/, via Panama$/, '، عبر بنما'], [/, via Bab el-Mandeb$/, '، عبر باب المندب'], [/, direct$/, '، مباشر'],
+    [/^(.+) airport → (.+) airport$/, 'مطار $1 ← مطار $2'], [/ by truck · (\d+) trucks/g, ' بالشاحنة · $1 شاحنات'], [/ by truck$/g, ' بالشاحنة'],
+    [/(\d[\d,.]*) × 40ft HC/g, '$1 × 40 قدماً HC'], [/(\d[\d,.]*) × 40ft/g, '$1 × 40 قدماً'], [/(\d[\d,.]*) × 20ft/g, '$1 × 20 قدماً'], [/LCL ([\d.]+) w\/m/g, 'شحنة جزئية $1 طن شحن'],
+    [/([\d.]+) w\/m in a shared box/g, '$1 طن شحن في حاوية مشتركة'], [/(\d+) containers?/g, '$1 حاوية'], [/(\d+) more containers? loaded the same way\./g, '$1 حاوية أخرى محمّلة بالطريقة نفسها.'],
+    [/^Container (\d+) · (.+)$/, 'الحاوية $1 · $2'],
+    [/(\d[\d,]*) units · ([\d,]+) kg \((\d+)% of weight limit\) · floor (\d+)% covered · ([\d.,]+) m³/g, '$1 وحدة · $2 كغ ($3% من حد الوزن) · الأرضية مغطاة $4% · $5 م³'],
+    [/([\d.]+) m long × ([\d.]+) m wide/g, 'الطول $1 م × العرض $2 م'],
+    [/^Your cargo: (\d[\d,]*) kg per m³$/, 'بضاعتك: $1 كغ لكل م³'], [/^(20|40)ft limit (\d+) kg\/m³$/, 'حد $1 قدماً $2 كغ/م³'], [/^(20|40)ft (\d+)$/, '$1 قدماً: $2'], [/: (\d+) kg\/m³$/, ': $1 كغ/م³'],
+    [/^\$([\d,.]+) per (.+?)( · \+\$([\d,]+))?$/, (m, a, u, x, b) => `$${a} لكل ${AR_UNITS[u] || u}` + (b ? ` · +$${b}` : '')],
+    [/^Edited · baseline (.+)$/, (m, st) => 'معدَّل · خط الأساس ' + ({ open: 'مفتوح', watch: 'مراقبة', 'high risk': 'مخاطر مرتفعة', closed: 'مغلق' })[st]],
+    [/^Your scenario · (\d+) changes?$/, 'سيناريوك · $1 تعديل'], [/^Your scenario \((\d+) changes?\) · $/, 'سيناريوك ($1 تعديل) · '], [/^Baseline 11 Oct 2026 · $/, 'خط الأساس 11 تشرين الأول 2026 · '],
+    [/^Score (\d+)\/100$/, 'الدرجة $1/100'], [/^(.+) · expected risk cost \$([\d,]+)$/, '$1 · تكلفة المخاطر المتوقعة $2$'],
+    [/^(Low|Medium|High) · (\d+)$/, (m, l, n) => ({ Low: 'منخفضة', Medium: 'متوسطة', High: 'مرتفعة' })[l] + ' · ' + n],
+    [/^Risk (low|medium|high)$/, (m, l) => 'مخاطر ' + ({ low: 'منخفضة', medium: 'متوسطة', high: 'مرتفعة' })[l]],
+    [/([\d.]+)% of cargo value, including war-risk cover/g, '$1% من قيمة البضاعة، بما فيها غطاء مخاطر الحرب'], [/([\d.]+)% of cargo value$/g, '$1% من قيمة البضاعة'],
+    [/ × ([\d.]+)% × ([\d.]+) days ÷ 365/g, ' × $1% × $2 يوم ÷ 365'],
+    [/War-risk surcharge: \$([\d,]+) per 40ft\./g, 'رسم مخاطر الحرب: $1$ لكل 40 قدماً.'], [/^Container (\d+)$/, 'الحاوية $1'],
+    [/^Baseline 11 Oct 2026 ·$/, 'خط الأساس 11 تشرين الأول 2026 ·'], [/^Your scenario \((\d+) changes?\) ·$/, 'سيناريوك ($1 تعديل) ·'],
+    [/^(Truck|Port and customs|Ship|Plane|Train|Transshipment|Step) · day ([\d.]+)$/, (m, k, d) => ({ Truck: 'شاحنة', 'Port and customs': 'ميناء وجمارك', Ship: 'سفينة', Plane: 'طائرة', Train: 'قطار', Transshipment: 'مسافنة', Step: 'مرحلة' })[k] + ' · اليوم ' + d],
+    [/^Day ([\d.]+)$/, 'اليوم $1'], [/^Day (\d+) of (\d+) · /, 'اليوم $1 من $2 · '], [/^Delivered in about ([\d.]+) days · \$([\d,]+) total landed cost$/, 'وصلت خلال نحو $1 يوم · $2$ التكلفة الإجمالية حتى الوصول'],
+    [/ days door to door$/, ' يوم من الباب إلى الباب'], [/ days · risk score (\d+)$/, ' يوم · درجة المخاطر $1'],
+    [/^Great-circle distance ([\d,]+) km$/, 'المسافة المباشرة $1 كم'], [/^Compare all (\d+) ports$/, 'مقارنة الموانئ الـ $1'], [/^day ([\d.]+)$/, 'اليوم $1'], [/^Day (\d+) of (\d+)$/, 'اليوم $1 من $2'],
+    [/^(\d+) changes?$/, '$1 تعديل'], [/^expected risk cost \$([\d,]+)$/, 'تكلفة المخاطر المتوقعة $1$'], [/^(\d[\d,]*) units$/, '$1 وحدة'], [/^([\d,]+) kg \((\d+)% of weight limit\)$/, '$1 كغ ($2% من حد الوزن)'], [/^floor (\d+)% covered$/, 'الأرضية مغطاة $1%'],
+    [/^([\d.,]+) days door to door$/, '$1 يوم من الباب إلى الباب'], [/^risk score (\d+)$/, 'درجة المخاطر $1'],
+    [/\bvia Suez\b/g, 'عبر السويس'], [/\bvia Cape of Good Hope\b/g, 'عبر رأس الرجاء الصالح'], [/\bvia Panama\b/g, 'عبر بنما'], [/\bvia Bab el-Mandeb\b/g, 'عبر باب المندب'], [/، direct$/, '، مباشر'], [/^ exports$/, ' تصدّر'], [/^ imports$/, ' تستورد'],
+    [/^(.+) · (Open|Watch|High risk|Closed)$/, (m, n, s) => n + ' · ' + ({ Open: 'مفتوح', Watch: 'مراقبة', 'High risk': 'مخاطر مرتفعة', Closed: 'مغلق' })[s]],
+    [/^(Main freight|Surcharges|Port, handling, customs|Trucking and feeders|Insurance|Cost of time|Cost of risk) (\$[\d,]+)$/, (m, k, v) => AR_EXACT[k] + ' ' + v],
+    [/^(Main freight|Surcharges|Port, handling, customs|Trucking and feeders|Insurance|Cost of time|Cost of risk): (\$[\d,]+)$/, (m, k, v) => AR_EXACT[k] + ': ' + v],
+    [/^(.+): one (.+) is ([\d.]+) m high, taller than the (.+) door \(([\d.]+) m\)\.$/, '$1: ارتفاع الوحدة $3 م، أعلى من باب $4 ($5 م).'],
+    [/^(.+): a ([\d.]+) × ([\d.]+) m (.+) does not fit on the (.+) floor\.$/, '$1: وحدة $2 × $3 م لا تتسع على أرضية $5.'], [/^(.+): one (.+) weighs more than the (.+) weight limit\.$/, '$1: وزن الوحدة أكبر من حد وزن $3.'],
+    [/(\d[\d,.]*) (pallet|carton|crate|bundle|IBC tank|unit|bag)s?\b/g, (m, n, u) => `${n} ${AR_UNITS[u]}`],
+    [/^(\d+(?:\.\d+)?) d$/, '$1 يوم'], [/^(\d+)d$/, '$1ي'], [/(\d+(?:\.\d+)?) days\b/g, '$1 يوم'], [/(\d+(?:\.\d+)?) d · /g, '$1 يوم · '],
+    [/(\d) m³/g, '$1 م³'], [/(\d) m$/g, '$1 م'], [/\bkg\b/g, 'كغ'], [/\bkm\b/g, 'كم'], [/\bper 40ft\b/g, 'لكل 40 قدماً']
+  ];
+  const AR_NAME_LIST = Object.keys(AR_NAMES).sort((a, b) => b.length - a.length);
+  const LATIN = /[A-Za-z]{2,}|\d m³|\d m$/;
+  function trStr(s) {
+    if (!s || !LATIN.test(s)) return s;
+    if (AR_EXACT[s] != null) return AR_EXACT[s];
+    const m = s.match(/^(\s*)([\s\S]*?)(\s*)$/); const core = m[2];
+    if (AR_EXACT[core] != null) return m[1] + AR_EXACT[core] + m[3];
+    if (AR_NAMES[core] != null) return m[1] + AR_NAMES[core] + m[3];
+    if (core.includes('\n')) return m[1] + core.split('\n').map(trStr).join('\n') + m[3];
+    if (core.includes(' · ')) return m[1] + core.split(' · ').map(trStr).join(' · ') + m[3];
+    let t = core;
+    for (const [re, rp] of AR_RULES) { re.lastIndex = 0; t = t.replace(re, rp); }
+    for (const n of AR_NAME_LIST) if (t.includes(n)) t = t.split(n).join(AR_NAMES[n]);
+    t = t.replace(/→/g, '←');
+    return m[1] + t + m[3];
+  }
+  const TR = x => AR ? trStr(x) : x;
+  const plural = (u, n) => AR ? u : u + (n === 1 ? '' : 's');
+  const lastSet = new WeakMap();
+  const ATTRS = ['data-label', 'title', 'label', 'placeholder', 'aria-label'];
+  function trNode(n) {
+    if (n.nodeType === 3) { const p = n.parentNode; if (!p || p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE') return;
+      if (lastSet.get(n) === n.nodeValue) return; const v = trStr(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; lastSet.set(n, n.nodeValue); return; }
+    if (n.nodeType !== 1 || n.nodeName === 'SCRIPT' || n.nodeName === 'STYLE') return;
+    ATTRS.forEach(a => { const v = n.getAttribute(a); if (v && LATIN.test(v)) { const t = trStr(v); if (t !== v) n.setAttribute(a, t); } });
+    for (let c = n.firstChild; c; c = c.nextSibling) trNode(c);
+  }
+  function startArabic() {
+    document.documentElement.lang = 'ar'; document.documentElement.dir = 'rtl'; document.title = 'مخطِّط ممرات الشحن';
+    trNode(document.body);
+    new MutationObserver(ms => { for (const m of ms) { if (m.type === 'characterData') trNode(m.target); else if (m.type === 'attributes') { if (m.target.getAttribute(m.attributeName) && LATIN.test(m.target.getAttribute(m.attributeName))) { const v = m.target.getAttribute(m.attributeName), t = trStr(v); if (t !== v) m.target.setAttribute(m.attributeName, t); } } else m.addedNodes.forEach(trNode); } })
+      .observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['data-label', 'title'] });
+  }
+
   function info(key) { const s = document.createElement('span'); s.className = 'info'; s.tabIndex = 0; s.dataset.k = key; s.textContent = 'i'; s.setAttribute('role', 'button'); s.setAttribute('aria-label', 'Explain: ' + (G[key] ? G[key][0] : key)); return s; }
   function legKey(l) {
     if (l.kind === 'sea') return 'sea'; if (l.kind === 'air') return 'air';
@@ -681,7 +1055,8 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
   // one floating tooltip for the whole page (works inside scrolling tables)
   const gtip = document.createElement('div'); gtip.className = 'gtip'; gtip.hidden = true; document.body.append(gtip);
   function showTip(t) {
-    const k = t.dataset.k, g = G[k] || [t.dataset.title || '', t.dataset.tip || ''];
+    const k = t.dataset.k; let g = (AR && G_AR[k]) || G[k] || [t.dataset.title || '', t.dataset.tip || ''];
+    if (AR && !G_AR[k]) g = [trStr(g[0]), trStr(g[1])];
     if (!g[1]) return; gtip.replaceChildren(); if (g[0]) gtip.append(Object.assign(document.createElement('b'), { textContent: g[0] })); gtip.append(document.createTextNode(g[1])); gtip.hidden = false;
     const r = t.getBoundingClientRect(), w = gtip.offsetWidth, h = gtip.offsetHeight;
     let x = r.left + r.width / 2 - w / 2; x = Math.max(12, Math.min(window.innerWidth - w - 12, x));
@@ -720,7 +1095,7 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
       ['Costs and how they are calculated', ['cash', 'road', 'exportPort_leg', 'sea', 'lane', 'feeder', 'war', 'importPort_leg', 'air', 'rail', 'insurance', 'time', 'risk', 'total']],
       ['Risk and recommendation rules', ['choke', 'chokeModel', 'riskSettings', 'statusRules', 'pDisrupt', 'delayDays', 'warUSD', 'insAdd', 'divert', 'border', 'sanctions', 'score', 'level', 'best', 'fastest', 'safest', 'breakeven']]];
     $('glossBody').replaceChildren(...groups.map(([h, ks]) => { const d = document.createElement('div'); const h3 = document.createElement('h3'); h3.textContent = h; const dl = document.createElement('dl');
-      ks.forEach(k => { const dt = document.createElement('dt'); dt.textContent = G[k][0]; const dd = document.createElement('dd'); dd.textContent = G[k][1]; dl.append(dt, dd); }); d.append(h3, dl); return d; }));
+      ks.forEach(k => { const g = (AR && G_AR[k]) || G[k]; const dt = document.createElement('dt'); dt.textContent = g[0]; const dd = document.createElement('dd'); dd.textContent = g[1]; dl.append(dt, dd); }); d.append(h3, dl); return d; }));
   })();
 
   // ---------- selectors ----------
@@ -768,8 +1143,9 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
     'HC': { key: 'HC', name: '40ft high cube', short: '40ft HC', L: 12.032, W: 2.352, H: 2.698, door: 2.585, pay: 26500, cbm: 76.3 }
   };
   const MCOL = ['--m1', '--m2', '--m3', '--m4', '--m5', '--m6'];
-  const newLine = (id, qty) => { const m = MATI[id]; return { p: id, qty, unit: m.unit, L: m.L, W: m.W, H: m.H, kg: m.kg, stack: m.stack, val: m.val }; };
+  const newLine = (id, qty) => { const m = MATI[id]; return { p: id, qty, unit: AR ? (AR_UNITS[m.unit] || m.unit) : m.unit, L: m.L, W: m.W, H: m.H, kg: m.kg, stack: m.stack, val: m.val }; };
   if (!Array.isArray(state.lines) || !state.lines.length) state.lines = [newLine('clothes', 40)];
+  { const rev = {}; Object.entries(AR_UNITS).forEach(([e, a]) => rev[a] = e); state.lines.forEach(l => { if (AR && AR_UNITS[l.unit]) l.unit = AR_UNITS[l.unit]; else if (!AR && rev[l.unit]) l.unit = rev[l.unit]; }); }
   if (!state.equipMode) state.equipMode = 'auto';
   const E9 = 1e-9;
   const payOf = ct => Math.min(ct.pay, A.roadCapKg);
@@ -850,7 +1226,8 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
       const sel = document.createElement('select'); sel.setAttribute('aria-label', 'Material'); MAT.forEach(m => sel.append(new Option(m.name, m.id))); sel.value = l.p;
       sel.addEventListener('change', () => { const q = l.qty; state.lines[i] = newLine(sel.value, q); linesTable(); run(); });
       const wr = el('div'); wr.style.display = 'flex'; wr.style.alignItems = 'center'; wr.append(sw, sel); td.append(wr); tr.append(td);
-      const mk = (k, step, w) => { const c = el('td'); const inp = document.createElement('input'); inp.type = k === 'unit' ? 'text' : 'number'; inp.value = l[k]; if (step) { inp.step = step; inp.min = 0; } if (w) inp.style.width = w;
+      const LBL = { qty: 'Quantity', unit: 'Packed as', L: 'Length m', W: 'Width m', H: 'Height m', kg: 'Kg per unit', stack: 'Max layers', val: 'Value per unit $' };
+      const mk = (k, step, w) => { const c = el('td'); c.dataset.label = LBL[k]; const inp = document.createElement('input'); inp.type = k === 'unit' ? 'text' : 'number'; inp.value = l[k]; if (step) { inp.step = step; inp.min = 0; } if (w) inp.style.width = w;
         inp.setAttribute('aria-label', k); inp.addEventListener('input', () => { if (k === 'unit') { l.unit = inp.value || 'unit'; run(); return; } const v = parseFloat(inp.value); if (!isNaN(v) && v >= 0 && (v > 0 || k === 'qty' || k === 'val')) { l[k] = k === 'qty' || k === 'stack' ? Math.max(k === 'stack' ? 1 : 0, Math.round(v)) : v; run(); } });
         c.append(inp); return c; };
       tr.append(mk('qty', 1), (() => { const c = mk('unit', null, '90px'); c.className = 'l'; return c; })(), mk('L', 0.05), mk('W', 0.05), mk('H', 0.05), mk('kg', 10), mk('stack', 1), mk('val', 100));
@@ -918,7 +1295,7 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
     const box = $('lpViz'); box.replaceChildren(); $('lpLeg').replaceChildren();
     const o = plan.chosen; if (!o) { box.append(el('div', 'empty', 'Nothing to load.')); return; }
     state.lines.forEach((l, i) => { if (!l.qty) return; const s = el('span'); const sw = el('span', 'sw'); sw.style.background = `var(${MCOL[i % 6]})`;
-      s.append(sw, document.createTextNode(`${MATI[l.p].name} · ${n0(l.qty)} ${l.unit}${l.qty > 1 ? 's' : ''}`)); $('lpLeg').append(s); });
+      s.append(sw, document.createTextNode(`${MATI[l.p].name} · ${n0(l.qty)} ${plural(l.unit, l.qty)}`)); $('lpLeg').append(s); });
     const avail = Math.max(260, box.clientWidth - 80), sc = Math.min(52, avail / 12.032);
     $('vizSub').textContent = `${o.title} · ${o.count}`;
     const show = o.cont.slice(0, 3);
@@ -948,31 +1325,37 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
     // explanation
     const w = $('eqWhy'); w.replaceChildren(); const o = plan.chosen; if (!o || !T.cbm) return;
     const d = T.kg / T.cbm, t40 = payOf(CT['40']) / CT['40'].cbm, t20 = payOf(CT['20']) / CT['20'].cbm;
-    const p1 = el('p'); p1.textContent = `Your cargo weighs ${n0(T.kg)} kg and takes ${n0(T.cbm, 1)} m³, so each m³ weighs ${n0(d)} kg. ` +
+    const p1 = el('p'); if (AR) p1.textContent = `تزن بضاعتك ${n0(T.kg)} كغ وتشغل ${n0(T.cbm, 1)} م³، أي أن كل متر مكعب يزن ${n0(d)} كغ. ` +
+      (d < t40 ? 'هذه بضاعة خفيفة: تملأ المساحة قبل بلوغ حد الوزن في أي حاوية، فأنت تشتري المساحة فعلياً، والحاوية الأكبر تبيع المساحة بسعر أرخص.'
+        : d < t20 ? 'هذه بضاعة متوسطة الوزن: حاوية 40 قدماً تبلغ حد الوزن مع بقاء مساحة فارغة، بينما تمتلئ حاوية 20 قدماً بالحجم أولاً.'
+        : 'هذه بضاعة ثقيلة: حتى حاوية 20 قدماً تبلغ حد الوزن قبل أن تمتلئ، فالمساحة الإضافية ستنتقل فارغة. الحاويات الأصغر تحمل وزناً أكبر مقابل كل دولار.');
+    else p1.textContent = `Your cargo weighs ${n0(T.kg)} kg and takes ${n0(T.cbm, 1)} m³, so each m³ weighs ${n0(d)} kg. ` +
       (d < t40 ? 'That is light cargo: it fills the space before the weight limit in any container, so you are really buying space, and the bigger box sells space more cheaply.'
         : d < t20 ? 'That is medium-weight cargo: a 40ft box would reach its weight limit with space left over, while a 20ft box fills up by space first.'
         : 'That is heavy cargo: even a 20ft box reaches its weight limit before it is full, so extra space would travel empty. Smaller boxes carry more weight per dollar.');
     w.append(p1);
     const p2 = el('p'); const rt = o.route;
-    const what = o.lcl ? `a shared container (${o.count})` : o.key === 'mix' ? o.count : `${o.cont.length} × ${o.title}`;
-    p2.textContent = (state.equipMode === 'auto' ? 'Chosen automatically: ' : 'Your choice: ') + what +
+    const what = AR ? (o.lcl ? `حاوية مشتركة (${trStr(o.count)})` : o.key === 'mix' ? trStr(o.count) : `${o.cont.length} × ${trStr(o.title)}`) : o.lcl ? `a shared container (${o.count})` : o.key === 'mix' ? o.count : `${o.cont.length} × ${o.title}`;
+    p2.textContent = AR ? (state.equipMode === 'auto' ? 'الاختيار التلقائي: ' : 'اختيارك: ') + what + (rt ? `، بتكلفة إجمالية ${usd(o.total)} على أرخص مسار بالحاويات (${TR(rt.label)}، ${TR(rt.sub)})، أي ${usd(o.total / Math.max(1, T.units))} لكل ${AR_UNITS[T.unitWord] || T.unitWord}.` : '.')
+      : (state.equipMode === 'auto' ? 'Chosen automatically: ' : 'Your choice: ') + what +
       (rt ? `, ${usd(o.total)} total landed cost on the cheapest container route (${rt.label}, ${rt.sub}), or ${usd(o.total / Math.max(1, T.units))} per ${T.unitWord}.` : '.');
     const alt = plan.opts.filter(x => x.ok && x !== o && isFinite(x.total)).sort((a, b) => a.total - b.total)[0];
-    if (state.equipMode === 'manual' && plan.cheapest && plan.cheapest !== o) p2.textContent += ` The cheapest option is ${plan.cheapest.title.toLowerCase()} (${plan.cheapest.count}), which would save ${usd(o.total - plan.cheapest.total)}.`;
-    else if (alt) p2.textContent += ` Next best: ${alt.title} (${alt.count}), ${usd(alt.total - o.total)} more.`;
+    if (state.equipMode === 'manual' && plan.cheapest && plan.cheapest !== o) p2.textContent += AR ? ` الخيار الأرخص هو ${trStr(plan.cheapest.title)} (${trStr(plan.cheapest.count)})، ويوفّر ${usd(o.total - plan.cheapest.total)}.` : ` The cheapest option is ${plan.cheapest.title.toLowerCase()} (${plan.cheapest.count}), which would save ${usd(o.total - plan.cheapest.total)}.`;
+    else if (alt) p2.textContent += AR ? ` الخيار التالي: ${trStr(alt.title)} (${trStr(alt.count)})، أغلى بمبلغ ${usd(alt.total - o.total)}.` : ` Next best: ${alt.title} (${alt.count}), ${usd(alt.total - o.total)} more.`;
     w.append(p2);
-    if (!o.lcl) { const p3 = el('p'); p3.textContent = o.m.bind === 'space' ? `The space limit is reached first: ${pct(o.m.floor)} of the floor is used but only ${pct(o.m.weight)} of the weight allowance.` : `The weight limit is reached first: ${pct(o.m.weight)} of the weight allowance is used with only ${pct(o.m.floor)} of the floor covered.`;
+    if (!o.lcl) { const p3 = el('p'); p3.textContent = AR ? (o.m.bind === 'space' ? `حد المساحة يُبلغ أولاً: ${pct(o.m.floor)} من الأرضية مستخدمة مقابل ${pct(o.m.weight)} فقط من حد الوزن.` : `حد الوزن يُبلغ أولاً: ${pct(o.m.weight)} من حد الوزن مستخدم مع تغطية ${pct(o.m.floor)} فقط من الأرضية.`)
+      : o.m.bind === 'space' ? `The space limit is reached first: ${pct(o.m.floor)} of the floor is used but only ${pct(o.m.weight)} of the weight allowance.` : `The weight limit is reached first: ${pct(o.m.weight)} of the weight allowance is used with only ${pct(o.m.floor)} of the floor covered.`;
       const h = plan.opts.find(x => x.key === 'HC'), f = plan.opts.find(x => x.key === '40');
-      if (h && f && h.ok && f.ok) { if (h.cont.length < f.cont.length) p3.textContent += ` A high cube's extra 30 cm lets one more layer fit, so ${h.cont.length} high cube${h.cont.length > 1 ? 's' : ''} replace${h.cont.length > 1 ? '' : 's'} ${f.cont.length} standard 40ft boxes.`;
-        else if (o.key === '40' || o.key === 'HC') p3.textContent += ' A high cube does not reduce the number of containers here: the extra 30 cm does not let enough items fit another layer.'; }
+      if (h && f && h.ok && f.ok) { if (h.cont.length < f.cont.length) p3.textContent += AR ? ` الـ 30 سم الإضافية في الحاوية العالية تسمح بطبقة إضافية، فتحلّ ${h.cont.length} حاوية عالية محل ${f.cont.length} حاوية 40 قدماً قياسية.` : ` A high cube's extra 30 cm lets one more layer fit, so ${h.cont.length} high cube${h.cont.length > 1 ? 's' : ''} replace${h.cont.length > 1 ? '' : 's'} ${f.cont.length} standard 40ft boxes.`;
+        else if (o.key === '40' || o.key === 'HC') p3.textContent += AR ? ' الحاوية العالية لا تقلل عدد الحاويات هنا: الـ 30 سم الإضافية لا تسمح بطبقة إضافية كافية.' : ' A high cube does not reduce the number of containers here: the extra 30 cm does not let enough items fit another layer.'; }
       w.append(p3); }
-    else { const p3 = el('p'); p3.textContent = `With less than a full container, you share a box and pay per revenue ton (the larger of m³ and tonnes): ${o.equip.wm.toFixed(1)} w/m. It costs more per m³ than a full box and adds about ${A.lclDays} days for consolidation.`; p3.append(' ', info('lcl')); w.append(p3); }
+    else { const p3 = el('p'); p3.textContent = AR ? `مع حمولة أقل من حاوية كاملة، تتشارك الحاوية وتدفع لكل طن شحن (الأكبر بين الأمتار المكعبة والأطنان): ${o.equip.wm.toFixed(1)} طن شحن. التكلفة للمتر المكعب أعلى من الحاوية الكاملة، وتضيف نحو ${A.lclDays} أيام للتجميع.` : `With less than a full container, you share a box and pay per revenue ton (the larger of m³ and tonnes): ${o.equip.wm.toFixed(1)} w/m. It costs more per m³ than a full box and adds about ${A.lclDays} days for consolidation.`; p3.append(' ', info('lcl')); w.append(p3); }
   }
   function renderTotals() {
     const T = cargo, t = $('lpTot'); t.replaceChildren();
     [['Units', n0(T.units)], ['Total weight', n0(T.kg) + ' kg'], ['Total volume', n0(T.cbm, 1) + ' m³'], ['Cargo value', usd(T.value)], ['Air chargeable weight', n0(Math.max(T.kg, T.cbm * A.volKgPerCbm)) + ' kg']]
       .forEach(([k, v], i) => { const s = el('span', null, k + ' '); if (i === 3) s.append(info('value'), ' '); if (i === 4) s.append(info('volume'), ' '); s.append(el('b', 'num', v)); t.append(s); });
-    const c = $('cargosum'); c.replaceChildren();
+    const c = $('cargosum'); if (!c) return; c.replaceChildren();
     const lbl = el('span', 'eyebrow', 'Cargo'); const main = state.lines.filter(l => l.qty > 0);
     const desc = main.length === 1 ? `${n0(main[0].qty)} ${main[0].unit}${main[0].qty > 1 ? 's' : ''} of ${MATI[main[0].p].name.toLowerCase()}` : `${main.length} materials, ${n0(T.units)} units`;
     c.append(lbl, el('b', null, desc), el('span', 'num', `${n0(T.kg)} kg · ${n0(T.cbm, 1)} m³ · ${usd(T.value)}`));
@@ -1010,10 +1393,11 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
       const td0 = el('td', 'l'); const nm = el('b', null, c.name + ' '); td0.append(nm, el('span', 'sub', air ? 'Air corridor, Middle East' : k === 'redsea' ? 'Between Bab el-Mandeb and Suez' : 'Sea chokepoint'));
       const changed = FIELDS.some(f => (c[f] ?? 0) !== BASE[k][f]); if (changed) td0.append(el('span', 'edited', 'Edited · baseline ' + SLAB[BASE[k].status].toLowerCase()));
       tr.append(td0);
-      const tdS = el('td', 'l'); const sel = document.createElement('select'); sel.className = 'st st-' + c.status; sel.setAttribute('aria-label', c.name + ' status');
+      const tdS = el('td', 'l'); tdS.dataset.label = 'Status'; const sel = document.createElement('select'); sel.className = 'st st-' + c.status; sel.setAttribute('aria-label', c.name + ' status');
       ['green', 'amber', 'red', 'closed'].forEach(s => sel.append(new Option(SLAB[s], s))); sel.value = c.status;
       sel.addEventListener('change', () => { applyStatus(k, sel.value); riskTable(); run(); }); tdS.append(sel); tr.append(tdS);
-      const num = (f, scale, step, dis) => { const td = el('td'); if (dis) { td.append(el('span', 'note', '—')); return td; }
+      const RL = { p: 'Chance of disruption %', delay: 'Delay if disrupted, days', war_usd: 'War surcharge $/40ft', ins_pct: 'Insurance add-on %', reroute_usd: 'Diversion cost $/40ft' };
+      const num = (f, scale, step, dis) => { const td = el('td'); td.dataset.label = RL[f]; if (dis) { td.className = 'na'; td.append(el('span', 'note', '—')); return td; }
         const i = document.createElement('input'); i.type = 'number'; i.min = 0; i.step = step; i.value = +((c[f] || 0) * scale).toFixed(2); i.disabled = c.status === 'closed'; i.setAttribute('aria-label', c.name + ' ' + f);
         i.addEventListener('input', () => { const v = parseFloat(i.value); if (!isNaN(v) && v >= 0) { c[f] = f === 'p' ? Math.min(1, v / scale) : v / scale; run(); } });
         i.addEventListener('change', () => riskTable()); td.append(i); return td; };
@@ -1039,14 +1423,52 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
   function renderRiskEffect() {
     riskBadge(); const box = $('reffect'); box.replaceChildren(); if (!result || !lastInp) return;
     const o = overrides(); const best = result.best;
-    if (!Object.keys(o).length) { box.append(el('span', null, best ? `Using the baseline. Best route: ${best.label} (${best.sub}), ${usd(best.total)}, ${dfmt(best.days)} days.` : 'No permitted route with these settings.')); return; }
+    if (!Object.keys(o).length) { box.append(el('span', null, AR ? (best ? `تستخدم خط الأساس. أفضل مسار: ${TR(best.label)} (${TR(best.sub)})، ${usd(best.total)}، ${dfmt(best.days)} يوم.` : 'لا يوجد مسار مسموح بهذه الإعدادات.') : best ? `Using the baseline. Best route: ${best.label} (${best.sub}), ${usd(best.total)}, ${dfmt(best.days)} days.` : 'No permitted route with these settings.')); return; }
     const cur = {}; RK.forEach(k => cur[k] = Object.assign({}, rget(k)));
     loadOverrides(null); const rb = S.compute(M, A, lastInp); RK.forEach(k => Object.assign(rget(k), cur[k]));
     const b0 = rb.best; const p = el('p');
-    p.textContent = (best ? `With your settings the best route is ${best.label} (${best.sub}) at ${usd(best.total)}, ${dfmt(best.days)} days, risk score ${best.score}.` : 'With your settings no permitted route remains.') +
+    if (AR) p.textContent = (best ? `بإعداداتك، أفضل مسار هو ${TR(best.label)} (${TR(best.sub)}) بمبلغ ${usd(best.total)}، ${dfmt(best.days)} يوم، درجة المخاطر ${best.score}.` : 'بإعداداتك لا يبقى أي مسار مسموح.') +
+      (b0 ? ` مع خط الأساس كان ${TR(b0.label)} (${TR(b0.sub)}) بمبلغ ${usd(b0.total)}، ${dfmt(b0.days)} يوم، درجة المخاطر ${b0.score}.` : '') +
+      (best && b0 ? ` التغيير: ${best.total >= b0.total ? '+' : '−'}${usd(Math.abs(best.total - b0.total))}، ${best.days >= b0.days ? '+' : '−'}${dfmt(Math.abs(best.days - b0.days))} يوم.` : '');
+    else p.textContent = (best ? `With your settings the best route is ${best.label} (${best.sub}) at ${usd(best.total)}, ${dfmt(best.days)} days, risk score ${best.score}.` : 'With your settings no permitted route remains.') +
       (b0 ? ` With the baseline it was ${b0.label} (${b0.sub}) at ${usd(b0.total)}, ${dfmt(b0.days)} days, risk score ${b0.score}.` : '') +
       (best && b0 ? ` Change: ${best.total >= b0.total ? '+' : '−'}${usd(Math.abs(best.total - b0.total))}, ${best.days >= b0.days ? '+' : '−'}${dfmt(Math.abs(best.days - b0.days))} days.` : '');
     box.append(p);
+  }
+
+
+  // ---------- guided flow, modes, sticky result ----------
+  function goStep(n, scroll) {
+    if (n === 'results') { $('results').scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    state.step = +n; document.querySelectorAll('.steppanel').forEach(p => p.hidden = +p.dataset.step !== state.step);
+    document.querySelectorAll('.stp').forEach(b => { const on = +b.dataset.step === state.step; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+    if (state.step === 2 && plan) { renderDensity(); renderViz(); }
+    try { localStorage.setItem('fcp-state2', JSON.stringify(state)); } catch (e) {}
+    if (scroll) { const p = document.querySelector(`.steppanel[data-step="${state.step}"]`); const y = p.getBoundingClientRect().top + window.scrollY - $('sticky').offsetHeight - 8; if (window.scrollY > y || scroll === 'force') window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' }); }
+  }
+  document.querySelectorAll('.stp').forEach(b => b.addEventListener('click', () => goStep(b.dataset.step, true)));
+  document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => goStep(b.dataset.go, 'force')));
+  $('sres').addEventListener('click', () => goStep('results'));
+  document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[href="#risk"],a[href="#planner"]'); if (!a) return; e.preventDefault(); goStep(a.getAttribute('href') === '#risk' ? 3 : 2, 'force'); });
+  function applyMode() {
+    document.body.classList.toggle('simple', state.mode === 'simple');
+    document.querySelectorAll('#modeSeg button').forEach(b => b.classList.toggle('on', b.dataset.mode === state.mode));
+    const open = state.mode === 'expert' || state.riskOpen; $('rdetail').hidden = !open;
+    $('rtoggle').hidden = state.mode === 'expert'; $('rtoggle').textContent = open ? 'Hide detailed settings ▴' : 'Show detailed settings ▾'; $('rtoggle').setAttribute('aria-expanded', open);
+  }
+  document.querySelectorAll('#modeSeg button').forEach(b => b.addEventListener('click', () => { state.mode = b.dataset.mode; applyMode(); run(); }));
+  $('rtoggle').addEventListener('click', () => { state.riskOpen = !state.riskOpen; applyMode(); try { localStorage.setItem('fcp-state2', JSON.stringify(state)); } catch (e) {} });
+  function renderSticky() {
+    const f = M.city[state.from], t = M.city[state.to];
+    $('s1').textContent = `${f.name} → ${t.name}`;
+    const used = state.lines.filter(l => l.qty > 0);
+    $('s2').textContent = cargo ? `${n0(cargo.units)} ${plural(cargo.unitWord, cargo.units)}` + (result && result.equipLabel && plan && plan.chosen ? ` · ${result.equipLabel}` : '') : '';
+    const n = Object.keys(overrides()).length, ap = activePreset(), pr = PRESETS.find(x => x[0] === ap);
+    $('s3').textContent = !n ? 'Baseline' : pr ? pr[1] : `Your scenario · ${n} change${n > 1 ? 's' : ''}`;
+    const r = $('sres'); r.replaceChildren(); const b = result && result.best;
+    if (!b) { r.append(el('span', 'lab', 'No permitted route')); return; }
+    const l = el('span'); l.append(el('span', 'lab', 'Best value '), modeTag(b.mode), document.createTextNode(' ' + b.label)); l.style.minWidth = '0';
+    r.append(l, el('span', 'big num', usd(b.total)), el('span', 'num', dfmt(b.days) + ' days'), pill(b.level, 'Risk ' + ({ green: 'low', amber: 'medium', red: 'high' })[b.level]));
   }
 
   // ---------- assumptions ----------
@@ -1177,15 +1599,17 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
     // why
     const why = el('div', 'why'); const ok = result.options.filter(o => !o.blocked);
     const second = ok.filter(o => o !== best)[0];
-    const p1 = el('p'); p1.textContent = `${best.label} (${best.sub}) has the lowest total cost at ${usd(best.total)}, taking about ${dfmt(best.days)} days door to door.` + (second ? ` The next option, ${second.label.toLowerCase()} (${second.sub}), costs ${usd(second.total - best.total)} more.` : '');
+    const p1 = el('p'); p1.textContent = AR ? `${TR(best.label)} (${TR(best.sub)}) هو الأقل تكلفة إجمالية بمبلغ ${usd(best.total)}، ويستغرق نحو ${dfmt(best.days)} يوم من الباب إلى الباب.` + (second ? ` الخيار التالي، ${TR(second.label)} (${TR(second.sub)})، أغلى بمبلغ ${usd(second.total - best.total)}.` : '')
+      : `${best.label} (${best.sub}) has the lowest total cost at ${usd(best.total)}, taking about ${dfmt(best.days)} days door to door.` + (second ? ` The next option, ${second.label} (${second.sub}), costs ${usd(second.total - best.total)} more.` : '');
     why.append(p1);
     if (best.level === 'red') { const p = el('p'); const safer = ok.filter(o => o.level !== 'red').sort((a, b) => a.total - b.total)[0];
-      p.textContent = `It passes a high-risk chokepoint.` + (safer ? ` The cheapest route avoiding high-risk areas is ${safer.label.toLowerCase()} at ${usd(safer.total)} (+${usd(safer.total - best.total)}, ${dfmt(safer.days)} days).` : ''); why.append(p); }
+      p.textContent = AR ? 'يمر عبر نقطة اختناق عالية المخاطر.' + (safer ? ` أرخص مسار يتجنب المناطق عالية المخاطر هو ${TR(safer.label)} بمبلغ ${usd(safer.total)} (+${usd(safer.total - best.total)}، ${dfmt(safer.days)} يوم).` : '')
+        : `It passes a high-risk chokepoint.` + (safer ? ` The cheapest route avoiding high-risk areas is ${safer.label} at ${usd(safer.total)} (+${usd(safer.total - best.total)}, ${dfmt(safer.days)} days).` : ''); why.append(p); }
     const air = ok.find(o => o.mode === 'air');
     if (air && air !== best && result.slopes) { const sa = result.slopes[air.id], sb = result.slopes[best.id];
-      if (sa && sb && sb.b > sa.b) { const v = (sa.a - sb.a) / (sb.b - sa.b); const p = el('p'); p.textContent = `Air would beat this route only for cargo worth more than about ${usd(v)} per shipment, because each day in transit currently costs ${usd(result.daily)}. `; p.append(info('breakeven')); why.append(p); } }
+      if (sa && sb && sb.b > sa.b) { const v = (sa.a - sb.a) / (sb.b - sa.b); const p = el('p'); p.textContent = AR ? `يتفوّق الشحن الجوي على هذا المسار فقط لبضاعة تزيد قيمتها على نحو ${usd(v)} للشحنة، لأن كل يوم نقل يكلّف حالياً ${usd(result.daily)}. ` : `Air would beat this route only for cargo worth more than about ${usd(v)} per shipment, because each day in transit currently costs ${usd(result.daily)}. `; p.append(info('breakeven')); why.append(p); } }
     const blocked = result.options.filter(o => o.blocked);
-    if (blocked.length) { const p = el('p'); p.textContent = `${blocked.map(o => o.label).join(', ')} is shown but excluded from the recommendation because of sanctions exposure.`; why.append(p); }
+    if (blocked.length) { const p = el('p'); p.textContent = AR ? `${blocked.map(o => TR(o.label)).join('، ')} معروض للمقارنة لكنه مستبعد من التوصية بسبب التعرض للعقوبات.` : `${blocked.map(o => o.label).join(', ')} is shown but excluded from the recommendation because of sanctions exposure.`; why.append(p); }
     rec.append(why);
   }
 
@@ -1235,13 +1659,15 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
     const ord = { closed: -1, red: 0, amber: 1, green: 2 };
     Object.entries(D.choke).concat([['airspace', D.airspace]]).filter(([id]) => id !== 'redsea').sort((a, b) => ord[a[1].status] - ord[b[1].status]).forEach(([id, c]) => {
       const li = el('li'); const nb = el('b', null, c.name + ' ');
+      if (AR) nb.append(tipEl(trStr(c.name) + ': مدخلات النموذج', `الحالة: ${({ green: 'مفتوح', amber: 'مراقبة', red: 'مخاطر مرتفعة', closed: 'مغلق' })[c.status]}. احتمال الاضطراب ${Math.round(c.p * 100)}%، التأخير عند الاضطراب ${c.delay} يوم${c.reroute_usd ? '، تكلفة التحويل ' + c.reroute_usd + '$ لكل 40 قدماً' : ''}${c.war_usd ? '، رسم مخاطر الحرب ' + c.war_usd + '$ لكل 40 قدماً' : ''}${c.ins_pct ? '، علاوة التأمين +' + c.ins_pct + '%' : ''}.`)); else
       nb.append(tipEl(c.name + ': model inputs', `Status ${({ green: 'open', amber: 'watch', red: 'high risk', closed: 'closed' })[c.status]}. Chance of disruption ${Math.round(c.p * 100)}%, delay if disrupted ${c.delay} days${c.reroute_usd ? ', extra diversion cost $' + c.reroute_usd + ' per 40ft' : ''}${c.war_usd ? ', war-risk surcharge $' + c.war_usd + ' per 40ft' : ''}${c.ins_pct ? ', cargo insurance +' + c.ins_pct + '%' : ''}. Risk score points: ${c.status === 'closed' ? 'route blocked' : c.status === 'red' ? 30 : c.status === 'amber' ? 12 : 2}.`));
       li.append(pill(c.status, ({ green: 'Open', amber: 'Watch', red: 'High risk', closed: 'Closed' })[c.status]), nb);
       const extra = c.status !== 'closed' && c.war_usd ? ` War-risk surcharge: ${usd(c.war_usd)} per 40ft.` : '';
-      const d = el('span', 'rd', (c.status === 'closed' ? 'Closed in your risk settings: routes avoid it.' : c.note) + extra); if (c.src) { d.append(' '); const a = el('a', null, 'Source'); a.href = c.src; a.target = '_blank'; a.rel = 'noopener'; d.append(a); } li.append(d); ul.append(li); });
+      const d = el('span', 'rd', TR(c.status === 'closed' ? 'Closed in your risk settings: routes avoid it.' : c.note) + TR(extra)); if (c.src) { d.append(' '); const a = el('a', null, 'Source'); a.href = c.src; a.target = '_blank'; a.rel = 'noopener'; d.append(a); } li.append(d); ul.append(li); });
   }
 
   function renderScatter() {
+    if (!$('scatter').getClientRects().length) return;
     const s = d3.select('#scatter'); const node = $('scatter'); const W = node.parentNode.clientWidth - 32 || 500, H = 260;
     s.attr('viewBox', `0 0 ${W} ${H}`).selectAll('*').remove();
     const os = result.options; if (!os.length) return;
@@ -1325,7 +1751,7 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
     try { localStorage.setItem('fcp-state2', JSON.stringify(state)); } catch (e) {}
     renderChokes(); if (typeof riskTable === 'function' && !document.querySelector('#rtab tbody tr')) riskTable();
     cargo = cargoTotals();
-    if (state.from === state.to) { plan = { opts: [], chosen: null, cheapest: null }; renderTotals(); renderDensity(); $('eqgrid').replaceChildren(); $('eqWhy').replaceChildren(); $('lpViz').replaceChildren(); result = { options: [], gc: 0 }; $('rec').replaceChildren(el('div', 'empty', 'Choose two different cities.')); $('opts').querySelector('tbody').replaceChildren(); mapDraw(); renderScatter(); roles(); return; }
+    if (state.from === state.to) { plan = { opts: [], chosen: null, cheapest: null }; result = null; renderSticky(); renderTotals(); renderDensity(); $('eqgrid').replaceChildren(); $('eqWhy').replaceChildren(); $('lpViz').replaceChildren(); result = { options: [], gc: 0 }; $('rec').replaceChildren(el('div', 'empty', 'Choose two different cities.')); $('opts').querySelector('tbody').replaceChildren(); mapDraw(); renderScatter(); roles(); return; }
     const base = { from: state.from, to: state.to, fromPort: state.fromPort, toPort: state.toPort, value: cargo.value, kg: Math.max(1, cargo.kg), cbm: Math.max(0.01, cargo.cbm), rate: state.rate };
     plan = planEquip(base);
     const inp = Object.assign({}, base, { equip: plan.chosen ? plan.chosen.equip : { n40: 1 } });
@@ -1335,10 +1761,13 @@ select.st-green{color:var(--ok);background:var(--ok-bg)} select.st-amber{color:v
     const r0 = S.compute(M, A, Object.assign({}, inp, { value: 0 })), r1 = S.compute(M, A, Object.assign({}, inp, { value: 1e6 }));
     result.slopes = {}; r0.options.forEach(o => { const o1 = r1.options.find(x => x.id === o.id); if (o1) result.slopes[o.id] = { a: o.total, b: (o1.total - o.total) / 1e6 }; });
     if (!result.options.some(o => o.id === selId)) selId = result.best ? result.best.id : (result.options[0] || {}).id;
-    stopAnim(); roles(); renderRec(); renderTable(); renderDetail(); renderJourney(); mapDraw(); renderScatter(); renderRiskEffect();
+    stopAnim(); roles(); renderRec(); renderTable(); renderDetail(); renderJourney(); mapDraw(); renderScatter(); renderRiskEffect(); renderSticky();
     const n = Object.keys(state.risk).length; $('chokeSub').replaceChildren(document.createTextNode(n ? `Your scenario (${n} change${n > 1 ? 's' : ''}) · ` : 'Baseline 11 Oct 2026 · '), Object.assign(el('a', null, 'Change risk settings ↓'), { href: '#risk' })); $('chokeSub').querySelector('a').style.color = 'var(--accent)';
   }
-  syncInputs(); linesTable(); riskTable(); run();
+  $('langBtn').textContent = AR ? 'English' : 'العربية'; $('langBtn').setAttribute('lang', AR ? 'en' : 'ar');
+  $('langBtn').addEventListener('click', () => { state.lang = AR ? 'en' : 'ar'; try { localStorage.setItem('fcp-state2', JSON.stringify(state)); } catch (e) {} const u = new URL(location.href); u.searchParams.set('lang', state.lang); location.href = u.toString(); });
+  syncInputs(); linesTable(); riskTable(); applyMode(); goStep(state.step || 1); run();
+  if (AR) startArabic();
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { stopAnim(); mapDraw(); renderScatter(); if (plan) { renderDensity(); renderViz(); } }, 150); });
   setTimeout(() => { if (!anim) play(); }, 900);
   if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { mapDraw(); renderScatter(); if (plan) { renderDensity(); renderViz(); } });
